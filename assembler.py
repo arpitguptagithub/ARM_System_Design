@@ -69,6 +69,7 @@ class Assembler:
         'LE': '1101',  # Signed Less than or Equal
         'AL': '1110',  # Always
         'NV': '1111',  # Unpredictable
+        '' : '1101'  # if something else is there instead of condition (ADDS)
     }
         self.symbol_table = {}
         self.instructions = []
@@ -195,7 +196,7 @@ class Assembler:
         opcode = self.opcode.get("MOV")
 
         # Condition and flags
-        condition = '1110'  # AL (always)
+        condition = self.get_condition(instruction_name)
         class_type = '00'   # Data processing
         immediate_flag = '1'  # Immediate flag
         set_flags = '0'     # Not updating flags
@@ -316,7 +317,7 @@ class Assembler:
         print(f"Opcode for ADC: {opcode}")
 
         # Condition and flags
-        condition = '1110'       # AL (always)
+        condition = self.get_condition(instruction_name)
         immediate_flag = '0'     # Not using an immediate value
         set_flags = '0'          # Not updating flags
         class_type = '00'        # Data processing
@@ -371,7 +372,7 @@ class Assembler:
         print(f"Opcode for SUB: {opcode}")
 
         # Condition and flags
-        condition = '1110'  # AL (always)
+        condition = self.get_condition(instruction_name)
         immediate_flag = '0'  # Not using an immediate value
         class_type = '00'   # Data processing
         set_flags = '0'     # Not updating flags
@@ -434,7 +435,7 @@ class Assembler:
         print(f"Opcode for SUB: {opcode}")
 
         # Condition and flags
-        condition = '1110'  # AL (always)
+        condition = self.get_condition(instruction_name)
         immediate_flag = '0'  # Not using an immediate value
         class_type = '00'   # Data processing
         set_flags = '0'     # Not updating flags
@@ -496,7 +497,7 @@ class Assembler:
         print(f"Opcode for SUB: {opcode}")
 
         # Condition and flags
-        condition = '1110'  # AL (always)
+        condition = self.get_condition(instruction_name)
         immediate_flag = '0'  # Not using an immediate value
         class_type = '00'   # Data processing
         set_flags = '0'     # Not updating flags
@@ -550,7 +551,7 @@ class Assembler:
         print(f"Opcode for ADC: {opcode}")
 
         # Condition and flags
-        condition = '1110'       # AL (always)
+        condition = self.get_condition(instruction_name)
         immediate_flag = 0     # Not using an immediate value
         set_flags = '0'          # Not updating flags
         class_type = '00'        # Data processing
@@ -597,7 +598,7 @@ class Assembler:
         print(f"Opcode for ADC: {opcode}")
         opcode = "1111"
         # Condition and flags
-        condition = '1110'       # AL (always)
+        condition = self.get_condition(instruction_name)
         immediate_flag = 0     # Not using an immediate value
         set_flags = '0'          # Not updating flags
         class_type = '00'        # Data processing
@@ -655,7 +656,7 @@ class Assembler:
         print(f"Opcode for ADC: {opcode}")
         opcode = "0001" #GOT OPCODE FROM ARM WEBSITE
         # Condition and flags
-        condition = '1110'       # AL (always)
+        condition = self.get_condition(instruction_name)
         immediate_flag = 0     # Not using an immediate value
         set_flags = '0'          # Not updating flags
         class_type = '00'        # Data processing
@@ -699,7 +700,7 @@ class Assembler:
         opcode = '1010'  # CMP opcode in 4 bits
 
         # Condition and flags
-        condition = '1110'  # AL (always)
+        condition = self.get_condition(instruction_name)
         immediate_flag = 0  # Using registers (1 bit)
         set_flags = '1'  # CMP sets flags
 
@@ -741,7 +742,7 @@ class Assembler:
         opcode = '1000'  # TST opcode in 4 bits
 
         # Condition and flags
-        condition = '1110'  # AL (always)
+        condition = self.get_condition(instruction_name)
         immediate_flag = 0  # Using registers (1 bit)
         set_flags = '1'      # Not updating flags (not used in TST)
 
@@ -781,7 +782,7 @@ class Assembler:
             raise ValueError("Invalid register")
 
         # Encoding values
-        condition = '1110'  # AL (always)
+        condition = self.get_condition(instruction_name)
         immediate_flag_extended = '010'  # Using immediate (1 bit)
         P = '0'  # Post-indexed addressing (0)
         U = '1'  # Offset is added (1)
@@ -828,7 +829,7 @@ class Assembler:
             raise ValueError("Invalid register")
 
         # Encoding values
-        condition = '1110'  # AL (always)
+        condition = self.get_condition(instruction_name)
         immediate_flag_extended = '010'  # Using immediate (1 bit)
         P = '0'  # Post-indexed addressing (0)
         U = '1'  # Offset is added (1)
