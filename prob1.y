@@ -287,3 +287,298 @@ logical_or_expression  // Grammar for logical OR operation
     | logical_or_expression OR_OP logical_and_expression  // Logical OR operation
     ;
 
+conditional_expression
+    : logical_or_expression  // Logical OR expression
+    | logical_or_expression '?' expression ':' conditional_expression  // Ternary conditional operation
+    ;
+
+assignment_expression
+    : conditional_expression  // Conditional expression
+    | unary_expression assignment_operator assignment_expression  // Assignment with unary expression
+    ;
+
+assignment_operator  // Operators for assignment
+    : '='  // Direct assignment
+    | MUL_ASSIGN  // Multiplication assignment (e.g., *=)
+    | DIV_ASSIGN  // Division assignment (e.g., /=)
+    | MOD_ASSIGN  // Modulus assignment (e.g., %=)
+    | ADD_ASSIGN  // Addition assignment (e.g., +=)
+    | SUB_ASSIGN  // Subtraction assignment (e.g., -=)
+    | LEFT_ASSIGN  // Left shift assignment (e.g., <<=)
+    | RIGHT_ASSIGN  // Right shift assignment (e.g., >>=)
+    | AND_ASSIGN  // Bitwise AND assignment (e.g., &=)
+    | XOR_ASSIGN  // Bitwise XOR assignment (e.g., ^=)
+    | OR_ASSIGN  // Bitwise OR assignment (e.g., |=)
+    ;
+
+expression
+    : assignment_expression  // Assignment expression
+    | expression ',' assignment_expression  // Comma-separated expressions
+    ;
+
+constant_expression
+    : conditional_expression  // Constant expression via conditional expressions
+    ;
+
+declaration
+    : declaration_specifiers ';'  // Declaration with specifiers
+    | declaration_specifiers init_declarator_list ';'  // Declaration with specifiers and initializers
+    ;
+
+init_declarator_list
+    : init_declarator  // Single declarator
+    | init_declarator_list ',' init_declarator  // Comma-separated list of declarators
+    ;
+
+init_declarator
+    : declarator  // Declarator
+    | declarator '=' initializer  // Declarator with initializer
+    ;
+
+storage_class_specifier
+    : TYPEDEF  // Typedef storage class specifier
+    | EXTERN  // Extern storage class specifier
+    | STATIC  // Static storage class specifier
+    | AUTO  // Auto storage class specifier
+    | REGISTER  // Register storage class specifier
+    ;
+
+struct_or_union_specifier
+    : struct_or_union IDENTIFIER '{' struct_declaration_list '}'  // Struct or union definition
+    | struct_or_union '{' struct_declaration_list '}'  // Struct or union without an identifier
+    | struct_or_union IDENTIFIER  // Struct or union with an identifier
+    ;
+
+struct_or_union
+    : STRUCT  // Struct keyword
+    | UNION  // Union keyword
+    ;
+
+struct_declaration_list
+    : struct_declaration  // Single struct declaration
+    | struct_declaration_list struct_declaration  // List of struct declarations
+    ;
+
+struct_declaration
+    : specifier_qualifier_list struct_declarator_list ';'  // Struct declaration with specifiers and declarators
+    ;
+
+specifier_qualifier_list
+    : type_specifier specifier_qualifier_list  // Type specifier followed by more qualifiers
+    | type_specifier  // Type specifier only
+    | type_qualifier specifier_qualifier_list  // Type qualifier followed by more qualifiers
+    | type_qualifier  // Type qualifier only
+    ;
+
+struct_declarator_list
+    : struct_declarator  // Single struct declarator
+    | struct_declarator_list ',' struct_declarator  // Comma-separated list of struct declarators
+    ;
+
+struct_declarator
+    : declarator  // Declarator
+    | ':' constant_expression  // Bit-field width declaration
+    | declarator ':' constant_expression  // Declarator with bit-field width
+    ;
+
+enum_specifier
+    : ENUM '{' enumerator_list '}'  // Enum definition
+    | ENUM IDENTIFIER '{' enumerator_list '}'  // Enum definition with identifier
+    | ENUM IDENTIFIER  // Enum with identifier only
+    ;
+
+enumerator_list
+    : enumerator  // Single enumerator
+    | enumerator_list ',' enumerator  // Comma-separated list of enumerators
+    ;
+
+enumerator
+    : IDENTIFIER  // Enumerator identifier
+    | IDENTIFIER '=' constant_expression  // Enumerator with constant value
+    ;
+
+type_qualifier
+    : CONST  // Const qualifier
+    | VOLATILE  // Volatile qualifier
+    ;
+
+declarator
+    : pointer direct_declarator  // Declarator with a pointer
+    | direct_declarator  // Direct declarator
+    ;
+
+direct_declarator
+    : IDENTIFIER  // Identifier
+    | '(' declarator ')'  // Parenthesized declarator
+    | direct_declarator '[' constant_expression ']'  // Array declarator with size
+    | direct_declarator '[' ']'  // Array declarator without size
+    | direct_declarator '(' parameter_type_list ')'  // Function declarator with parameter types
+    | direct_declarator '(' identifier_list ')'  // Function declarator with identifiers
+    | direct_declarator '(' ')'  // Function declarator without parameters
+    ;
+
+pointer
+    : '*'  // Single pointer
+    | '*' type_qualifier_list  // Pointer with qualifiers
+    | '*' pointer  // Multiple pointers
+    | '*' type_qualifier_list pointer  // Multiple pointers with qualifiers
+    ;
+
+type_qualifier_list
+    : type_qualifier  // Single type qualifier
+    | type_qualifier_list type_qualifier  // List of type qualifiers
+    ;
+
+parameter_type_list
+    : parameter_list  // List of parameters
+    | parameter_list ',' ELLIPSIS  // Parameters followed by ellipsis (variadic function)
+    ;
+
+parameter_list
+    : parameter_declaration  // Single parameter
+    | parameter_list ',' parameter_declaration  // Comma-separated list of parameters
+    ;
+
+parameter_declaration
+    : declaration_specifiers declarator  // Declaration with declarator
+    | declaration_specifiers  // Declaration without declarator
+    ;
+
+identifier_list
+    : IDENTIFIER  // Single identifier
+    | identifier_list ',' IDENTIFIER  // Comma-separated list of identifiers
+    ;
+
+type_name
+    : specifier_qualifier_list  // Type name
+    | specifier_qualifier_list abstract_declarator  // Type name with an abstract declarator
+    ;
+
+abstract_declarator
+    : pointer  // Abstract declarator with pointer
+    | direct_abstract_declarator  // Abstract declarator
+    | pointer direct_abstract_declarator  // Pointer and direct abstract declarator
+    ;
+
+direct_abstract_declarator
+    : '(' abstract_declarator ')'  // Parenthesized abstract declarator
+    | '[' ']'  // Array declarator without size
+    | '[' constant_expression ']'  // Array declarator with size
+    | direct_abstract_declarator '[' ']'  // Array declarator without size (nested)
+    | direct_abstract_declarator '[' constant_expression ']'  // Array declarator with size (nested)
+    | '(' ')'  // Function declarator without parameters
+    | '(' parameter_type_list ')'  // Function declarator with parameters
+    | direct_abstract_declarator '(' ')'  // Nested function declarator without parameters
+    | direct_abstract_declarator '(' parameter_type_list ')'  // Nested function declarator with parameters
+    ;
+
+initializer
+    : assignment_expression  // Simple initializer
+    | '{' initializer_list '}'  // Initializer list in braces
+    | '{' initializer_list ',' '}'  // Initializer list with a trailing comma
+    ;
+
+initializer_list
+    : initializer  // Single initializer
+    | initializer_list ',' initializer  // Comma-separated list of initializers
+    ;
+
+statement
+    : labeled_statement  // Labeled statement
+    | compound_statement  // Compound statement
+    | expression_statement  // Expression statement
+    | selection_statement  // Selection statement (if, switch)
+    | iteration_statement  // Iteration statement (for, while, do-while)
+    | jump_statement  // Jump statement (goto, continue, break, return)
+    ;
+
+labeled_statement
+    : IDENTIFIER ':' statement  // Labeled statement with identifier
+    | CASE constant_expression ':' statement  // Case label in switch
+    | DEFAULT ':' statement  // Default label in switch
+    ;
+
+compound_statement
+    : '{' '}'  // Empty compound statement
+    | '{' statement_list '}'  // Compound statement with statements
+    | '{' declaration_list '}'  // Compound statement with declarations
+    | '{' declaration_list statement_list '}'  // Compound statement with declarations and statements
+    ;
+
+declaration_list
+    : declaration  // Single declaration
+    | declaration_list declaration  // List of declarations
+    ;
+
+statement_list
+    : statement  // Single statement
+    | statement_list statement  // List of statements
+    ;
+
+expression_statement
+    : ';'  // Empty expression statement
+    | expression ';'  // Expression statement
+    ;
+
+selection_statement
+    : IF '(' expression ')' statement  // If statement
+    | IF '(' expression ')' statement ELSE statement  // If-else statement
+    | SWITCH '(' expression ')' statement  // Switch statement
+    ;
+
+iteration_statement
+    : WHILE '(' expression ')' statement  // While loop
+    | DO statement WHILE '(' expression ')' ';'  // Do-while loop
+    | FOR '(' expression_statement expression_statement ')' statement  // For loop
+    | FOR '(' expression_statement expression_statement expression ')' statement  // For loop with initialization, condition, and update
+    ;
+
+jump_statement
+    : GOTO IDENTIFIER ';'  // Goto statement
+    | CONTINUE ';'  // Continue statement
+    | BREAK ';'  // Break statement
+    | RETURN ';'  // Return statement
+    | RETURN expression ';'  // Return statement with expression
+    ;
+
+begin
+    : translation_unit  // Start symbol for the grammar
+
+translation_unit
+    : external_declaration  // Single external declaration
+    | translation_unit external_declaration  // List of external declarations
+    ;
+
+function_definition
+    : declaration_specifiers declarator declaration_list compound_statement  // Function with declarations and statements
+    | declaration_specifiers MAIN '(' ')' compound_statement  // Main function definition
+    | declaration_specifiers declarator compound_statement  // Function without declaration list
+    | declarator declaration_list compound_statement  // Function without specifiers
+    | declarator compound_statement  // Simplified function definition
+    ;
+
+%%
+#include <stdio.h>  // Include standard input-output header
+
+extern char yytext[];  // External variable for parsed text
+extern int column;  // Column number tracking
+
+// Error reporting function
+int yyerror(char *s){
+    printf("Error \n");
+    printf("%s \n", s);
+    yyparse();  // Reparse the input after error
+}
+
+int main(int argc, char* argv[]) {
+    if(argc > 1) {
+        FILE *fp = fopen(argv[1], "r");  // Open file for reading
+        if(fp) {
+            yyin = fp;  // Set input file for parsing
+        }
+    }
+    yyparse();  // Start parsing
+    return 0;
+}
+
+
