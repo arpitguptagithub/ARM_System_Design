@@ -139,8 +139,8 @@ L?\"(\\.|[^\\"])*\"	{ count(); return(STRING_LITERAL); } // String literal
 
 %%
 
-// Function to handle comments in the input. 
-// It will print characters until it encounters a '*' followed by '/' which marks the end of the comment.
+//Function to handle comments in the input. 
+//It will print characters until it encounters a '*' followed by '/' which marks the end of the comment.
 comment()
 {
 	char c, c1;
@@ -164,10 +164,10 @@ loop:
 		putchar(c1);
 }
 
-// Variable to keep track of the current column in the input (used for formatting/tab alignment).
+//Variable to keep track of the current column in the input (used for formatting/tab alignment).
 int column = 0;
 
-// Function to count the number of characters processed and update the column position accordingly.
+//Function to count the number of characters processed and update the column position accordingly.
 void count()
 {
 	int i;
@@ -187,7 +187,7 @@ void count()
 	}
 }
 
-// Function to check the type of identifier (like if it's a type name or a regular identifier).
+//Function to check the type of identifier (like if it's a type name or a regular identifier).
 int check_type()
 {
 	/*
