@@ -74,6 +74,7 @@ class Assembler:
         self.symbol_table = {}
         self.instructions = []
         self.machine_code = []
+        self.current_address = 0
         
     def remove_comments_and_spaces(self, instruction):
         """Removes comments and extra spaces from the instruction."""
@@ -81,28 +82,44 @@ class Assembler:
         instruction = instruction.split(';')[0].strip()
         return instruction
 
+    import re
+
     def tokenize_instruction(self, instruction):
         """Tokenizes instruction and extracts key parts."""
         instruction = self.remove_comments_and_spaces(instruction)
 
-        # Regex to match memory reference with or without immediate values (e.g., [R0] or [R0, #4])
+        # Regex to match memory reference with or without immediate values
         memory_pattern = r'\[(R\d+)(?:,\s*#?(\d+))?\]'
+        
         tokens = []
 
-        # Split instruction into parts based on commas and spaces, but keep memory references intact
-        instruction_parts = re.split(r'\s+|,\s*', instruction)
+        # Split instruction into parts based on commas and spaces but keep memory references intact
+        instruction_parts = re.split(r',\s*|\s+', instruction)
 
-        # Look for the memory pattern in the instruction
         for part in instruction_parts:
-            match = re.match(memory_pattern, part)
+            # Check for memory pattern matches
+            match = re.match(memory_pattern, part.strip())
             if match:
                 tokens.append(match.group(1))  # Register inside []
                 if match.group(2):  # Immediate offset, if present
                     tokens.append(f"#{match.group(2)}")
             else:
-                tokens.append(part)
+                # If part has brackets but wasn't matched, check if it can be split
+                if '[' in part and ']' in part:
+                    inner_match = re.match(r'\[(R\d+)\]', part)
+                    if inner_match:
+                        tokens.append(inner_match.group(1))
+                        # Check for immediate value
+                        immediate_match = re.search(r',\s*#?(\d+)', part)
+                        if immediate_match:
+                            tokens.append(f"#{immediate_match.group(1)}")
+                else:
+                    part = part.strip()  # Clean any whitespace
+                    if part:  # Ensure we don't append empty tokens
+                        tokens.append(part)
 
         return tokens
+
 
     def first_pass(self, source_code):
         lines = source_code.splitlines()
@@ -157,9 +174,11 @@ class Assembler:
     #     return tokens
 
     def second_pass(self):
+        self.current_address = 0
         for instruction in self.instructions:
             print("INST: ", instruction)
             self.machine_code.append(self.encode_instruction(instruction))
+            self.current_address += 4
     
     def encode_immediate(self, immediate_value):
         # This function encodes immediate values into the ARM format
@@ -803,6 +822,7 @@ class Assembler:
             f"{imm12}"              # Immediate value (12 bits)
         )
 
+        print(f"Binary instruction: {binary_instruction}")
         # Check for 32 bits
         if len(binary_instruction) != 32:
             raise ValueError(f"Binary instruction is not 32 bits: {binary_instruction}")
@@ -861,79 +881,106 @@ class Assembler:
 
         return machine_code
     
-    def blt_command(self, instruction_name, tokens):
+    def branch_command(self, instruction_name, tokens, instruction):
         """
-        Encodes the BLT (Branch if Less Than) instruction with an immediate offset ["BLT", "#-9"]
+        Encodes the branch command.
         """
-        # Condition for BLT
-        condition = '1010'  # Condition code for BLT (less than)
-        opcode = '1110'     # Opcode for branch with link (BL)
+        base_instruction_name = instruction_name
+        if len(instruction_name) > 3:
+            base_instruction_name = instruction_name[:-2]  # to check if it's B or BL
+
+        condition = '1110'  # Default to AL (Always) condition
+        if len(instruction_name) > 2:
+            condition = self.condition_codes.get(instruction_name[-2:])  
+            print("CONDITOIN ", condition)
+            
+        is_link = 'L' in base_instruction_name.upper()  # If the base instruction contains 'L', it's BL
+        opcode = '10'  # Base opcode for conditional branches
+        link_bit = '1' if is_link else '0'  # Set the L bit based on BL or B
         
-        # Parse the immediate value from the token
-        immediate_offset = int(tokens[1].replace('#', ''))
-        print("IMM OFFSET ", immediate_offset)
-        # Calculate the immediate value for the offset
-        immediate_value = immediate_offset // 4  # Immediate value in words
+        # Get the immediate value or label offset
+        offset = 0
+        imm_bit = '0'
+        if tokens[0].startswith('#'):
+            imm_bit = '1'
+            # Convert the immediate value to a signed 24-bit value (assuming it's in bytes)
+            offset = int(tokens[0][1:])  # Remove the '#' and convert to integer
+        else:
+            # If it's a label, calculate the offset (assuming label_address_map has the address)
+            label = tokens[0]
+            print("label ", label)
+            print("st addx ", self.symbol_table[label].value)
+            print("cur adx ", self.current_address)
+            offset = self.symbol_table[label].value - self.current_address # as branch use relative offset
+        print("OFFSET ", offset)
+        # The offset needs to be divided by 4 and fit in a 24-bit signed integer range
+        offset >>= 2  
 
-        # Convert the immediate value to a 24-bit two's complement binary representation
-        if immediate_value < 0:
-            immediate_value = (1 << 24) + immediate_value  # Convert to unsigned
+        #check if it's neg
+        if offset < 0:
+            offset = (1 << 24) + offset  # Convert to 24-bit 2's complement for negative values
 
-        # Format the immediate value as a 24-bit binary string
-        immediate_binary = f"{immediate_value:024b}"
+        # Mask the offset to ensure it's within 24 bits
+        offset &= 0xFFFFFF  # Mask to 24 bits
 
-        # Construct the final binary instruction
+        # Form the binary instruction: Condition (4 bits), Opcode (4 bits), L bit (1 bit), 24-bit offset
         binary_instruction = (
-            f"{condition}"   # Condition (4 bits)
-            f"00"            # Unused bits (2 bits)
-            f"{opcode}"      # Opcode (4 bits)
-            f"1"             # Link bit (1 bit)
-            f"{immediate_binary}"  # Immediate value (24 bits)
+            f"{condition}"        # Condition (e.g., LT is 1011)
+            f"{opcode}"       # Opcode for branch (10 for B)
+            f"{imm_bit}"           # label (imm bit= 0)
+            f"{link_bit}"         # L bit (1 for BL, 0 for B)
+            f"{offset:024b}"      # 24-bit offset for branch target
         )
+        
+        print(f"Binary instruction: {binary_instruction}")
+        # Check for 32 bits
+        if len(binary_instruction) != 32:
+            print("LEN ", len(binary_instruction))
+            raise ValueError(f"Binary instruction is not 32 bits: {binary_instruction}")
 
+        
         # Convert binary instruction to hexadecimal
-        machine_code = f"{int(binary_instruction, 2):08X}"  # Convert binary to hex
+        machine_code = f"{int(binary_instruction, 2):08X}"
+        print(f"Machine code: {machine_code}")
 
         return machine_code
 
-
-    # You can replicate similar functions for other instructions like SUB, SBC, ORR, etc.
 
     def encode_instruction(self, instruction):
         tokens = self.tokenize_instruction(instruction)
         print("TOKENS: ", tokens)
         instruction_name = tokens[0].upper()
 
-        if instruction_name == "MOV":
+        if "MOV" in instruction_name:
             return self.mov_command(instruction_name, tokens[1:], instruction)
         elif "ADD" in instruction_name:
             return self.add_command(instruction_name, tokens[1:], instruction)
-        elif instruction_name == "ADDS":
+        elif "ADDS" in instruction_name:
             return self.adds_command(instruction_name, tokens[1:], instruction)
-        elif instruction_name == "LDR":
+        elif "LDR" in instruction_name:
             return self.ldr_command(instruction_name, tokens[1:], instruction)
-        elif instruction_name == "ADC":
+        elif "ADC" in instruction_name:
             return self.adc_command(instruction_name, tokens[1:], instruction)
-        elif instruction_name == "SUB":
+        elif "SUB" in instruction_name:
             return self.sub_command(instruction_name, tokens[1:], instruction)
-        elif instruction_name == "SBC":
+        elif "SBC" in instruction_name:
             return self.sbc_command(instruction_name, tokens[1:], instruction)
-        elif instruction_name == "ORR":
+        elif "ORR" in instruction_name:
             return self.orr_command(instruction_name, tokens[1:], instruction)
-        elif instruction_name == "AND":
+        elif "AND" in instruction_name:
             return self.and_command(instruction_name, tokens[1:], instruction)
-        elif instruction_name == "MVN":
+        elif "MVN" in instruction_name:
             return self.mvn_command(instruction_name, tokens[1:], instruction)
-        elif instruction_name == "EOR":
+        elif "EOR" in instruction_name:
             return self.eor_command(instruction_name, tokens[1:], instruction)
-        elif instruction_name == "CMP":
+        elif "CMP" in instruction_name:
             return self.cmp_command(instruction_name, tokens[1:], instruction)
-        elif instruction_name == "TST":
+        elif "TST" in instruction_name:
             return self.tst_command(instruction_name, tokens[1:], instruction)
-        elif instruction_name == "STR":
+        elif "STR" in instruction_name:
             return self.str_command(instruction_name, tokens[1:], instruction)
-        elif instruction_name == "LDR":
-            return self.ldr_command(instruction_name, tokens[1:], instruction)
+        elif "B" in instruction_name:
+            return self.branch_command(instruction_name, tokens[1:], instruction)
         else:
             raise ValueError(f"Unknown instruction: {instruction}")
 
@@ -947,7 +994,7 @@ class Assembler:
 if __name__ == "__main__":
     source_code = """
     start:
-    ADDNE   R1, R1, R1
+   MOV    R0 ,#1024  
     """
     
     assembler = Assembler()
