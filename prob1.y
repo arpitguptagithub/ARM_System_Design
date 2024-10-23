@@ -1,610 +1,289 @@
-%{
-#include<stdio.h>
-#include <string.h>
-#include <stdlib.h>
-int yylex();
-int yyerror(char *);
-int eflag=0;
-extern FILE * yyin;
+%{ 
+#include<stdio.h>  // Including the standard input/output header file
+#include <string.h>  // Including string manipulation functions
+#include <stdlib.h>  // Including standard library functions like memory allocation
+int yylex();  // Declaring the lexical analyzer function
+int yyerror(char *);  // Declaring the error handling function
+int eflag=0;  // Defining an error flag and initializing it to 0
+extern FILE * yyin;  // Declaring an external file pointer for input
 
+// Comment: The following line defines possible syntax for increment and decrement operations on IDs.
 //  INC "("ID ")" | "("ID ")" INC | DEC "("ID ")" | "("ID ")" DEC | 
 
 
-
-char *gen_var();
-char *gen_label();
-char *gen_out_fun();
-char *itoa(int num);
-void initialize();
+char *gen_var();  // Function to generate a variable
+char *gen_label();  // Function to generate a label
+char *gen_out_fun();  // Function to generate an output function
+char *itoa(int num);  // Function to convert an integer to a string
+void initialize();  // Function to initialize some setup
 %}
 
+%token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF  // Defining tokens for identifiers, constants, string literals, and sizeof
+%token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP  // Defining tokens for pointer, increment, decrement, and comparison operations
+%token AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN  // Defining tokens for bitwise and assignment operations
+%token SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN  // Additional assignment tokens
+%token XOR_ASSIGN OR_ASSIGN TYPE_NAME  // XOR, OR, and type name tokens
 
+%token TYPEDEF EXTERN STATIC AUTO REGISTER  // Storage class specifiers
+%token CHAR SHORT INT LONG SIGNED UNSIGNED FLOAT DOUBLE CONST VOLATILE VOID  // Data type specifiers
+%token STRUCT UNION ENUM ELLIPSIS  // Structure and enum related tokens
 
-%token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF
-%token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
-%token AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
-%token SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
-%token XOR_ASSIGN OR_ASSIGN TYPE_NAME
+%token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN  // Control structure tokens
 
-%token TYPEDEF EXTERN STATIC AUTO REGISTER
-%token CHAR SHORT INT LONG SIGNED UNSIGNED FLOAT DOUBLE CONST VOLATILE VOID
-%token STRUCT UNION ENUM ELLIPSIS
+%token CLASS PRIVATE PUBLIC PROTECTED VIRTUAL  // Object-oriented keywords
+%token NEW DELETE THIS OPERATOR TEMPLATE FRIEND  // Additional OOP and memory management tokens
+%token NAMESPACE USING THROW TRY CATCH  // Exception handling and namespace management tokens
+%token MAIN  // Main function token
 
-%token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
-
-%token CLASS PRIVATE PUBLIC PROTECTED VIRTUAL
-%token NEW DELETE THIS OPERATOR TEMPLATE FRIEND
-%token NAMESPACE USING THROW TRY CATCH
-%token MAIN
-
-%start begin
+%start begin  // Defining the starting point of the grammar
 %%
 
-expression_list
-    : assignment_expression
-    | expression_list ',' assignment_expression
+expression_list  // Defining expression list rule
+    : assignment_expression  // Single assignment expression in the list
+    | expression_list ',' assignment_expression  // Multiple expressions separated by commas
     ;
 
-class_specifier
-    : CLASS IDENTIFIER '{' class_body '}'
-    | CLASS IDENTIFIER ':' base_specifier_list '{' class_body '}'
-    | CLASS IDENTIFIER
-    | CLASS '{' class_body '}'
+class_specifier  // Grammar rules for class declarations
+    : CLASS IDENTIFIER '{' class_body '}'  // Class with identifier and body
+    | CLASS IDENTIFIER ':' base_specifier_list '{' class_body '}'  // Class with base specifiers (inheritance)
+    | CLASS IDENTIFIER  // Class with just identifier
+    | CLASS '{' class_body '}'  // Class with just body
     ;
 
-base_specifier_list
-    : base_specifier
-    | base_specifier_list ',' base_specifier
+base_specifier_list  // Defining base class list in case of inheritance
+    : base_specifier  // Single base specifier
+    | base_specifier_list ',' base_specifier  // Multiple base specifiers
     ;
 
-base_specifier
-    : IDENTIFIER
-    | VIRTUAL IDENTIFIER
-    | access_specifier IDENTIFIER
-    | VIRTUAL access_specifier IDENTIFIER
+base_specifier  // Rules for defining base classes
+    : IDENTIFIER  // Base class as an identifier
+    | VIRTUAL IDENTIFIER  // Virtual base class
+    | access_specifier IDENTIFIER  // Base class with access specifier
+    | VIRTUAL access_specifier IDENTIFIER  // Virtual base class with access specifier
     ;
 
-class_body
-    : class_member_declaration
-    | class_body class_member_declaration
+class_body  // Class body definition
+    : class_member_declaration  // A single class member
+    | class_body class_member_declaration  // Multiple class members
     ;
 
-class_member_declaration
-    : access_specifier ':'
-    | member_declaration
+class_member_declaration  // Rules for member declarations within the class
+    : access_specifier ':'  // Specifying access control for members
+    | member_declaration  // Declaring class members
     ;
 
-access_specifier
-    : PRIVATE
-    | PROTECTED
-    | PUBLIC
+access_specifier  // Access control keywords
+    : PRIVATE  // Private access
+    | PROTECTED  // Protected access
+    | PUBLIC  // Public access
     ;
 
-member_declaration
-    : declaration
-    | member_function_definition
-    | constructor_definition
-    | destructor_definition
+member_declaration  // Class member declarations
+    : declaration  // Variable or data member declaration
+    | member_function_definition  // Function member definition
+    | constructor_definition  // Constructor definition
+    | destructor_definition  // Destructor definition
     ;
 
-member_function_definition
-    : declaration_specifiers declarator compound_statement
+member_function_definition  // Function definition for class members
+    : declaration_specifiers declarator compound_statement  // Function signature with body
     ;
 
-constructor_definition
-    : IDENTIFIER '(' parameter_list ')' constructor_initializer compound_statement
-    | IDENTIFIER '(' ')' constructor_initializer compound_statement
+constructor_definition  // Constructor syntax
+    : IDENTIFIER '(' parameter_list ')' constructor_initializer compound_statement  // Constructor with parameters
+    | IDENTIFIER '(' ')' constructor_initializer compound_statement  // Constructor without parameters
     ;
 
-constructor_initializer
-    : ':' member_initializer_list
-    |
+constructor_initializer  // Initializer list for constructor
+    : ':' member_initializer_list  // Initializing member variables
+    |  // Empty initializer option
     ;
 
-member_initializer_list
-    : member_initializer
-    | member_initializer_list ',' member_initializer
+member_initializer_list  // List of member initializers
+    : member_initializer  // Single initializer
+    | member_initializer_list ',' member_initializer  // Multiple initializers
     ;
 
-member_initializer
-    : IDENTIFIER '(' expression_list ')'
-    | IDENTIFIER '(' ')'
+member_initializer  // Rules for member initialization in constructor
+    : IDENTIFIER '(' expression_list ')'  // Member initialization with parameters
+    | IDENTIFIER '(' ')'  // Member initialization without parameters
     ;
 
-destructor_definition
-    : '~' IDENTIFIER '(' ')' compound_statement
+destructor_definition  // Destructor definition
+    : '~' IDENTIFIER '(' ')' compound_statement  // Destructor body
     ;
 
-/* Extend declaration_specifiers to include class */
-declaration_specifiers
-    : storage_class_specifier
-    | storage_class_specifier declaration_specifiers
-    | type_specifier
-    | type_specifier declaration_specifiers
-    | type_qualifier
-    | type_qualifier declaration_specifiers
-    | class_specifier
-    | class_specifier declaration_specifiers
+declaration_specifiers  // Extending declaration specifiers to include class
+    : storage_class_specifier  // Specifying storage class
+    | storage_class_specifier declaration_specifiers  // Multiple storage specifiers
+    | type_specifier  // Specifying data type
+    | type_specifier declaration_specifiers  // Multiple type specifiers
+    | type_qualifier  // Specifying type qualifiers (e.g., const, volatile)
+    | type_qualifier declaration_specifiers  // Multiple type qualifiers
+    | class_specifier  // Class specifier in declaration
+    | class_specifier declaration_specifiers  // Multiple class specifiers
     ;
 
-/* Extend type_specifier to include class names */
-type_specifier
-    : VOID
-    | CHAR
-    | SHORT
-    | INT
-    | LONG
-    | FLOAT
-    | DOUBLE
-    | SIGNED
-    | UNSIGNED
-    | struct_or_union_specifier
-    | enum_specifier
-    | TYPE_NAME
+type_specifier  // Extending type specifier to include class names
+    : VOID  // Void data type
+    | CHAR  // Char data type
+    | SHORT  // Short integer
+    | INT  // Integer
+    | LONG  // Long integer
+    | FLOAT  // Floating point
+    | DOUBLE  // Double precision floating point
+    | SIGNED  // Signed integer
+    | UNSIGNED  // Unsigned integer
+    | struct_or_union_specifier  // Structure or union
+    | enum_specifier  // Enumeration
+    | TYPE_NAME  // Type name
     ;
 
-class_name
-    : IDENTIFIER
+class_name  // Defining class name as an identifier
+    : IDENTIFIER  // Class name as identifier
     ;
 
-/* New rules for object creation and deletion */
-new_expression
-    : NEW type_name
-    | NEW type_name '(' expression_list ')'
-    | NEW type_name '[' expression ']'
-    ;
-delete_expression
-    : DELETE expression
-    | DELETE '[' ']' expression
+new_expression  // Grammar for new expression (object creation)
+    : NEW type_name  // New object of a type
+    | NEW type_name '(' expression_list ')'  // New object with constructor parameters
+    | NEW type_name '[' expression ']'  // New array object
     ;
 
-/* Extend primary_expression to include this and new/delete expressions */
-primary_expression
-    : IDENTIFIER
-    | CONSTANT
-    | STRING_LITERAL
-    | '(' expression ')'
-    | THIS
+delete_expression  // Grammar for delete expression (object deletion)
+    : DELETE expression  // Delete object
+    | DELETE '[' ']' expression  // Delete array object
     ;
 
-/* Add namespace support */
-namespace_definition
-    : NAMESPACE IDENTIFIER '{' translation_unit '}'
-    | NAMESPACE '{' translation_unit '}'
+primary_expression  // Extending primary expressions to include this and new/delete expressions
+    : IDENTIFIER  // Identifier expression
+    | CONSTANT  // Constant value expression
+    | STRING_LITERAL  // String literal
+    | '(' expression ')'  // Expression in parentheses
+    | THIS  // 'this' pointer
     ;
 
-using_directive
-    : USING NAMESPACE IDENTIFIER ';'
+namespace_definition  // Grammar for namespace definition
+    : NAMESPACE IDENTIFIER '{' translation_unit '}'  // Named namespace with body
+    | NAMESPACE '{' translation_unit '}'  // Anonymous namespace
     ;
 
-/* Extend external_declaration to include namespace and using directives */
-external_declaration
-    : function_definition
-    | declaration
-    | namespace_definition
-    | using_directive
+using_directive  // Grammar for using directives (importing namespace)
+    : USING NAMESPACE IDENTIFIER ';'  // Using namespace directive
     ;
 
-/* Add exception handling */
-try_block
-    : TRY compound_statement catch_block_list
+external_declaration  // External declarations extended to include namespace and using directives
+    : function_definition  // Function definition
+    | declaration  // Variable declaration
+    | namespace_definition  // Namespace definition
+    | using_directive  // Using directive
     ;
 
-catch_block_list
-    : catch_block
-    | catch_block_list catch_block
+try_block  // Grammar for try block (exception handling)
+    : TRY compound_statement catch_block_list  // Try block with catch handlers
     ;
 
-catch_block
-    : CATCH '(' parameter_declaration ')' compound_statement
+catch_block_list  // List of catch blocks
+    : catch_block  // Single catch block
+    | catch_block_list catch_block  // Multiple catch blocks
     ;
 
-postfix_expression
-    : primary_expression
-    | postfix_expression '[' expression ']'
-    | postfix_expression '(' ')'
-    | postfix_expression '(' argument_expression_list ')'
-    | postfix_expression '.' IDENTIFIER
-    | postfix_expression PTR_OP IDENTIFIER
-    | postfix_expression INC_OP
-    | postfix_expression DEC_OP
-    | '(' type_name ')' '{' initializer_list '}'
-    | '(' type_name ')' '{' initializer_list ',' '}'
+catch_block  // Grammar for a catch block
+    : CATCH '(' parameter_declaration ')' compound_statement  // Catch block with parameter
     ;
 
-argument_expression_list
-    : assignment_expression
-    | argument_expression_list ',' assignment_expression
+postfix_expression  // Postfix expressions extended with member access and increment/decrement
+    : primary_expression  // Primary expression
+    | postfix_expression '[' expression ']'  // Array access
+    | postfix_expression '(' ')'  // Function call without arguments
+    | postfix_expression '(' argument_expression_list ')'  // Function call with arguments
+    | postfix_expression '.' IDENTIFIER  // Member access using dot operator
+    | postfix_expression PTR_OP IDENTIFIER  // Member access using pointer operator
+    | postfix_expression INC_OP  // Post-increment operation
+    | postfix_expression DEC_OP  // Post-decrement operation
+    | '(' type_name ')' '{' initializer_list '}'  // Cast with initializer list
+    | '(' type_name ')' '{' initializer_list ',' '}'  // Cast with initializer list and trailing comma
     ;
 
-unary_expression
-    : postfix_expression
-    | INC_OP unary_expression
-    | DEC_OP unary_expression
-    | unary_operator cast_expression
-    | SIZEOF unary_expression
-    | SIZEOF '(' type_name ')'
-    | new_expression
-    | delete_expression
+argument_expression_list  // Argument list in function calls
+    : assignment_expression  // Single assignment expression as an argument
+    | argument_expression_list ',' assignment_expression  // Multiple arguments separated by commas
     ;
 
-unary_operator
-    : '&' | '*' | '+' | '-' | '~' | '!'
+unary_expression  // Unary expressions including increment/decrement and sizeof
+    : postfix_expression  // Postfix expression
+    | INC_OP unary_expression  // Pre-increment operation
+    | DEC_OP unary_expression  // Pre-decrement operation
+    | unary_operator cast_expression  // Unary operator with cast
+    | SIZEOF unary_expression  // Sizeof operation on unary expression
+    | SIZEOF '(' type_name ')'  // Sizeof operation on a type
+    | new_expression  // New expression
+    | delete_expression  // Delete expression
     ;
 
-cast_expression
-    : unary_expression
-    | '(' type_name ')' cast_expression
+unary_operator  // Defining unary operators
+    : '&' | '*' | '+' | '-' | '~' | '!'  // Address, dereference, sign, bitwise and logical operators
     ;
 
-multiplicative_expression
-	: cast_expression
-	| multiplicative_expression '*' cast_expression
-	| multiplicative_expression '/' cast_expression
-	| multiplicative_expression '%' cast_expression
-	;
+cast_expression  // Type casting expressions
+    : unary_expression  // Unary expression
+    | '(' type_name ')' cast_expression  // Cast to a type
+    ;
+
+multiplicative_expression  // Grammar for multiplication, division, and modulo
+    : cast_expression  // Cast expression
+    | multiplicative_expression '*' cast_expression  // Multiplication
+    | multiplicative_expression '/' cast_expression  // Division
+    | multiplicative_expression '%' cast_expression  // Modulo
+    ;
+
+additive_expression  // Grammar for addition and subtraction
+    : multiplicative_expression  // Multiplicative expression
+    | additive_expression '+' multiplicative_expression  // Addition
+    | additive_expression '-' multiplicative_expression  // Subtraction
+    ;
+
+shift_expression  // Grammar for bitwise shifts
+    : additive_expression  // Additive expression
+    | shift_expression LEFT_OP additive_expression  // Left shift operation
+    | shift_expression RIGHT_OP additive_expression  // Right shift operation
+    ;
+
+relational_expression  // Grammar for relational operations
+    : shift_expression  // Shift expression
+    | relational_expression '<' shift_expression  // Less than
+    | relational_expression '>' shift_expression  // Greater than
+    | relational_expression LE_OP shift_expression  // Less than or equal to
+    | relational_expression GE_OP shift_expression  // Greater than or equal to
+    ;
+
+equality_expression  // Grammar for equality and inequality comparisons
+    : relational_expression  // Relational expression
+    | equality_expression EQ_OP relational_expression  // Equal to
+    | equality_expression NE_OP relational_expression  // Not equal to
+    ;
+
+and_expression  // Grammar for bitwise AND operation
+    : equality_expression  // Equality expression
+    | and_expression '&' equality_expression  // Bitwise AND operation
+    ;
+
+exclusive_or_expression  // Grammar for bitwise XOR operation
+    : and_expression  // AND expression
+    | exclusive_or_expression '^' and_expression  // XOR operation
+    ;
+
+inclusive_or_expression  // Grammar for bitwise OR operation
+    : exclusive_or_expression  // XOR expression
+    | inclusive_or_expression '|' exclusive_or_expression  // OR operation
+    ;
+
+logical_and_expression  // Grammar for logical AND operation
+    : inclusive_or_expression  // OR expression
+    | logical_and_expression AND_OP inclusive_or_expression  // Logical AND operation
+    ;
+
+logical_or_expression  // Grammar for logical OR operation
+    : logical_and_expression  // Logical AND expression
+    | logical_or_expression OR_OP logical_and_expression  // Logical OR operation
+    ;
 
-additive_expression
-	: multiplicative_expression
-	| additive_expression '+' multiplicative_expression
-	| additive_expression '-' multiplicative_expression
-	;
-
-shift_expression
-	: additive_expression
-	| shift_expression LEFT_OP additive_expression
-	| shift_expression RIGHT_OP additive_expression
-	;
-
-relational_expression
-	: shift_expression
-	| relational_expression '<' shift_expression
-	| relational_expression '>' shift_expression
-	| relational_expression LE_OP shift_expression
-	| relational_expression GE_OP shift_expression
-	;
-
-equality_expression
-	: relational_expression
-	| equality_expression EQ_OP relational_expression
-	| equality_expression NE_OP relational_expression
-	;
-
-and_expression
-	: equality_expression
-	| and_expression '&' equality_expression
-	;
-
-exclusive_or_expression
-	: and_expression
-	| exclusive_or_expression '^' and_expression
-	;
-
-inclusive_or_expression
-	: exclusive_or_expression
-	| inclusive_or_expression '|' exclusive_or_expression
-	;
-
-logical_and_expression
-	: inclusive_or_expression
-	| logical_and_expression AND_OP inclusive_or_expression
-	;
-
-logical_or_expression
-	: logical_and_expression
-	| logical_or_expression OR_OP logical_and_expression
-	;
-
-conditional_expression
-	: logical_or_expression
-	| logical_or_expression '?' expression ':' conditional_expression
-	;
-
-assignment_expression
-	: conditional_expression
-	| unary_expression assignment_operator assignment_expression
-	;
-
-assignment_operator
-	: '='
-	| MUL_ASSIGN
-	| DIV_ASSIGN
-	| MOD_ASSIGN
-	| ADD_ASSIGN
-	| SUB_ASSIGN
-	| LEFT_ASSIGN
-	| RIGHT_ASSIGN
-	| AND_ASSIGN
-	| XOR_ASSIGN
-	| OR_ASSIGN
-	;
-
-expression
-	: assignment_expression
-	| expression ',' assignment_expression
-	;
-
-constant_expression
-	: conditional_expression
-	;
-
-declaration
-	: declaration_specifiers ';'
-	| declaration_specifiers init_declarator_list ';'
-	;
-
-init_declarator_list
-	: init_declarator
-	| init_declarator_list ',' init_declarator
-	;
-
-init_declarator
-	: declarator
-	| declarator '=' initializer
-	;
-
-storage_class_specifier
-	: TYPEDEF
-	| EXTERN
-	| STATIC
-	| AUTO
-	| REGISTER
-	;
-
-
-struct_or_union_specifier
-	: struct_or_union IDENTIFIER '{' struct_declaration_list '}'
-	| struct_or_union '{' struct_declaration_list '}'
-	| struct_or_union IDENTIFIER
-	;
-
-struct_or_union
-	: STRUCT
-	| UNION
-	;
-
-struct_declaration_list
-	: struct_declaration
-	| struct_declaration_list struct_declaration
-	;
-
-struct_declaration
-	: specifier_qualifier_list struct_declarator_list ';'
-	;
-
-specifier_qualifier_list
-	: type_specifier specifier_qualifier_list
-	| type_specifier
-	| type_qualifier specifier_qualifier_list
-	| type_qualifier
-	;
-
-struct_declarator_list
-	: struct_declarator
-	| struct_declarator_list ',' struct_declarator
-	;
-
-struct_declarator
-	: declarator
-	| ':' constant_expression
-	| declarator ':' constant_expression
-	;
-
-enum_specifier
-	: ENUM '{' enumerator_list '}'
-	| ENUM IDENTIFIER '{' enumerator_list '}'
-	| ENUM IDENTIFIER
-	;
-
-enumerator_list
-	: enumerator
-	| enumerator_list ',' enumerator
-	;
-
-enumerator
-	: IDENTIFIER
-	| IDENTIFIER '=' constant_expression
-	;
-
-type_qualifier
-	: CONST
-	| VOLATILE
-	;
-
-declarator
-	: pointer direct_declarator
-	| direct_declarator
-	;
-
-direct_declarator
-	: IDENTIFIER
-	| '(' declarator ')'
-	| direct_declarator '[' constant_expression ']'
-	| direct_declarator '[' ']'
-	| direct_declarator '(' parameter_type_list ')'
-	| direct_declarator '(' identifier_list ')'
-	| direct_declarator '(' ')'
-	;
-
-pointer
-	: '*'
-	| '*' type_qualifier_list
-	| '*' pointer
-	| '*' type_qualifier_list pointer
-	;
-
-type_qualifier_list
-	: type_qualifier
-	| type_qualifier_list type_qualifier
-	;
-
-
-parameter_type_list
-	: parameter_list
-	| parameter_list ',' ELLIPSIS
-	;
-
-parameter_list
-	: parameter_declaration
-	| parameter_list ',' parameter_declaration
-	;
-
-parameter_declaration
-	: declaration_specifiers declarator
-	/* | declaration_specifiers abstract_declarator */
-	| declaration_specifiers
-	;
-
-identifier_list
-	: IDENTIFIER
-	| identifier_list ',' IDENTIFIER
-	;
-
-type_name
-	: specifier_qualifier_list
-	| specifier_qualifier_list abstract_declarator
-	;
-
-abstract_declarator
-	: pointer
-	| direct_abstract_declarator
-	| pointer direct_abstract_declarator
-	;
-
-direct_abstract_declarator
-	: '(' abstract_declarator ')'
-	| '[' ']'
-	| '[' constant_expression ']'
-	| direct_abstract_declarator '[' ']'
-	| direct_abstract_declarator '[' constant_expression ']'
-	| '(' ')'
-	| '(' parameter_type_list ')'
-	| direct_abstract_declarator '(' ')'
-	| direct_abstract_declarator '(' parameter_type_list ')'
-	;
-
-initializer
-	: assignment_expression
-	| '{' initializer_list '}'
-	| '{' initializer_list ',' '}'
-	;
-
-initializer_list
-	: initializer
-	| initializer_list ',' initializer
-	;
-
-statement
-	: labeled_statement
-	| compound_statement
-	| expression_statement
-	| selection_statement
-	| iteration_statement
-	| jump_statement
-	;
-
-labeled_statement
-	: IDENTIFIER ':' statement
-	| CASE constant_expression ':' statement
-	| DEFAULT ':' statement
-	;
-
-compound_statement
-	: '{'  '}'
-	| '{'
-statement_list '}' 
-	| '{' 
-	declaration_list '}'
-	| '{' 
-	
-
-	declaration_list statement_list '}' 
-	;
-
-declaration_list
-	: declaration
-	| declaration_list declaration
-
-	;
-
-statement_list
-	: statement
-	| statement_list statement 
-	;
-
-expression_statement
-	: ';'
-	| expression ';'
-	;
-
-selection_statement
-	: IF '(' expression ')' statement
-	| IF '(' expression ')' statement ELSE statement
-	| SWITCH '(' expression ')' statement
-	;
-
-iteration_statement
-	: WHILE '(' expression ')' statement
-	| DO statement WHILE '(' expression ')' ';'
-	| FOR '(' expression_statement expression_statement ')' statement
-	| FOR '(' expression_statement expression_statement expression ')' statement
-	;
-
-jump_statement
-	: GOTO IDENTIFIER ';'
-	| CONTINUE ';'
-	| BREAK ';'
-	| RETURN ';'
-	| RETURN expression ';'
-	;
-begin : 
-	translation_unit
-
-translation_unit
-	: external_declaration
-	| translation_unit external_declaration
-	;
-
-
-function_definition
-	:
-	 declaration_specifiers declarator declaration_list compound_statement
-	| declaration_specifiers MAIN '(' ')' compound_statement 
-	| declaration_specifiers declarator compound_statement
-	| declarator declaration_list compound_statement
-	| declarator compound_statement
-	;
-
-%%
-#include <stdio.h>
-
-extern char yytext[];
-extern int column;
-
-/* yyerror(s)
-char *s;
-{
-	fflush(stdout);
-	printf("\n%*s\n%*s\n", column, "^", column, s);
-} */
-
-int yyerror(char *s){
-	
-  
-  printf("Error \n ");
-  printf("%s \n",s);
-  yyparse();
-}
-
-int main(int argc, char* argv[])
-{
-
-	if(argc > 1)
-	{
-		FILE *fp = fopen(argv[1], "r");
-		if(fp)
-			yyin = fp;
-	}
-	yyparse();
-	return 0;
-}
