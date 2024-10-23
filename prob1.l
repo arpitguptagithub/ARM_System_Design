@@ -124,65 +124,84 @@ L?\"(\\.|[^\\"])*\"	{ count(); return(STRING_LITERAL); } // String literal
 "|"			{ count(); return('|'); } // Bitwise OR '|'
 "?"			{ count(); return('?'); } // Ternary conditional operator '?'
 
-[ \t\v\n\f]		{ count(); }
+[ \t\v\n\f]		{ count(); } 
 .			{ /* ignore bad characters */ }
 
 %%
 
+// Function to skip over whitespace characters (space, tab, vertical tab, newline, form feed).
+// These are passed to the count() function for column tracking purposes.
+[ \t\v\n\f]		{ count(); }
 
+// Catch-all rule for unrecognized or bad characters that are ignored.
+// It prevents them from causing errors in lexical analysis.
+.			{ /* ignore bad characters */ }
 
+%%
 
+// Function to handle comments in the input. 
+// It will print characters until it encounters a '*' followed by '/' which marks the end of the comment.
 comment()
 {
 	char c, c1;
 
 loop:
+	// Loop to read characters one by one until a '*' is found.
 	while ((c = input()) != '*' && c != 0)
+		// Print the character to output.
 		putchar(c);
 
+	// After encountering '*', check if the next character is '/' (the end of a comment).
 	if ((c1 = input()) != '/' && c != 0)
 	{
+		// If it's not '/', put the character back in the input stream and go back to the loop.
 		unput(c1);
 		goto loop;
 	}
 
+	// If we reach the end of the comment, output the '/'.
 	if (c != 0)
 		putchar(c1);
 }
 
-
+// Variable to keep track of the current column in the input (used for formatting/tab alignment).
 int column = 0;
 
+// Function to count the number of characters processed and update the column position accordingly.
 void count()
 {
 	int i;
 
+	// Loop through the characters in the matched text (yytext).
 	for (i = 0; yytext[i] != '\0'; i++)
+	{
+		// If a newline is found, reset the column count (since it's a new line).
 		if (yytext[i] == '\n')
 			column = 0;
+		// If a tab is found, increase the column based on tab spacing (usually 8 spaces).
 		else if (yytext[i] == '\t')
 			column += 8 - (column % 8);
+		// For all other characters, simply increment the column count.
 		else
 			column++;
-
-	
+	}
 }
 
-
+// Function to check the type of identifier (like if it's a type name or a regular identifier).
 int check_type()
 {
-/*
-* pseudo code --- this is what it should check
-*
-*	if (yytext == type_name)
-*		return(TYPE_NAME);
-*
-*	return(IDENTIFIER);
-*/
+	/*
+	 * Pseudo code that explains what this function should do:
+	 *
+	 *	if (yytext == type_name)  // Check if the matched text is a type name.
+	 *		return(TYPE_NAME);    // If so, return the type name token.
+	 *
+	 *	return(IDENTIFIER);        // Otherwise, return the identifier token.
+	 */
 
-/*
-*	it actually will only return IDENTIFIER
-*/
-
+	/*
+	 * In the actual implementation, it only returns IDENTIFIER.
+	 * This is just a placeholder for the actual logic.
+	 */
 	return(IDENTIFIER);
 }
