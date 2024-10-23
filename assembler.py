@@ -5,26 +5,17 @@ from St_Entry import ST_Entry
 class Assembler:
     def __init__(self):
         self.opcode = {
-            "MOV": 0b00111000,  # 0x38
-            "ADD": 0b00000000,  # 0x00
-            "ADDS": 0b00000000, # 0x00 with S-bit (sets the condition flags)
-            "ADC": 0b00000010,  # 0x02
-            "SUB": 0b00000001,  # 0x01
-            "SBC": 0b00000110,  # 0x06
-            "ORR": 0b00000100,  # 0x04
-            "AND": 0b00000000,  # 0x00
-            "MVN": 0b00111101,  # 0x3D
-            "EOR": 0b00001000,  # 0x08
-            "CMP": 0b00001110,  # 0x0E
-            "TST": 0b00001101,  # 0x0D
-            "LDR": 0b00011000,  # 0x18 (not a data processing operation but a load instruction)
-            "STR": 0b00010100,  # 0x14 (not a data processing operation but a store instruction)
-            "B":   0b00010111,  # 0x17 (branch instruction)
-            "BLT": 0b00001111,  # 0x0F (branch with condition)
-            "ADDNE": 0b00000000,  # 0x00 with NE condition
-            "ADDEQ": 0b00000000,  # 0x00 with EQ condition
-            "STRGT": 0b00010100,  # 0x14 with GT condition (not a data processing operation)
-            "ADDGT": 0b00000000,  # 0x00 with GT condition
+            "MOV": "1101", 
+            "ORR": "1100", 
+            "ADD" : "0100",
+            "ADC" : "0101",
+            "SUB" : "0010", 
+            "SBC" : "0110",
+            "MVN" : "1111",
+            "EOR" : "0001",
+            "CMP" : "1010",
+            "TST" : "1000",
+            "STR" : "0100",
         }
         self.regcode = {  
             "R0": 0,
@@ -181,9 +172,9 @@ class Assembler:
             self.current_address += 4
     
     def encode_immediate(self, immediate_value):
-        # This function encodes immediate values into the ARM format
-        if 0 <= immediate_value < 256:
-            return f"{immediate_value:08b}"  # 8-bit immediate
+        # The immediate value needs to fit within the last 12 bits of the 32-bit instruction
+        if 0 <= immediate_value < (1 << 12):  # 0 to 4095 (12 bits)
+            return f"{immediate_value:012b}"  # Return as 12-bit binary
         else:
             raise ValueError("Immediate value out of range for this implementation.")
         
@@ -213,7 +204,7 @@ class Assembler:
 
         # Opcode for MOV
         opcode = self.opcode.get("MOV")
-
+        print("OPCODE ", opcode)
         # Condition and flags
         condition = self.get_condition(instruction_name)
         class_type = '00'   # Data processing
@@ -225,7 +216,7 @@ class Assembler:
             f"{condition}"
             f"{class_type}"
             f"{immediate_flag}"
-            f"{opcode:08b}"  # Ensure opcode is in 8-bit binary
+            f"{opcode}"  # Ensure opcode is in 8-bit binary
             f"{set_flags}"
             f"{rd:04b}"      # Ensure rd is in 4-bit binary
             f"0000"          # Unused bits
@@ -235,7 +226,7 @@ class Assembler:
         print(f"Binary instruction: {binary_instruction}")
         # Check for 32 bits
         if len(binary_instruction) != 32:
-            print("LEN: ", len)
+            print("LEN: ", len(binary_instruction))
             raise ValueError(f"Binary instruction is not 32 bits: {binary_instruction}")
         # Convert binary to hexadecimal
         machine_code = f"{int(binary_instruction, 2):08X}"  # Convert binary to hex
@@ -994,7 +985,7 @@ class Assembler:
 if __name__ == "__main__":
     source_code = """
     start:
-   MOV    R0 ,#1024  
+   MOV    R0 ,#20 
     """
     
     assembler = Assembler()
