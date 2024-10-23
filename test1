@@ -1,0 +1,29 @@
+switch(a+b){
+    case 1:
+        a = b+c;
+        switch(b+c){
+            case 27*(a-7+8):
+                hola = hello;
+                if(king==pardhiv){
+                    topper = pardhiv;
+                    grade = s;
+                    number_of_gf = infinity;
+                    while(free_time){
+                        this_gets_super_hot = true;
+                        night_stand = night_stand++;
+                    }
+                }
+                break;
+            case 3:
+                hello = hola;
+                break;
+            default:  
+                hola = chao;
+        }
+        break;
+    case 2:
+        b = c+d;
+        break;
+    default:
+}
+v = v + 1;

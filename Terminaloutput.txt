@@ -1,0 +1,19 @@
+yacc -v -d -t prob1.y
+prob1.y: warning: 4 nonterminals useless in grammar [-Wother]
+prob1.y: warning: 5 rules useless in grammar [-Wother]
+prob1.y:145.1-10: warning: nonterminal useless in grammar: class_name [-Wother]
+  145 | class_name
+      | ^~~~~~~~~~
+prob1.y:188.1-9: warning: nonterminal useless in grammar: try_block [-Wother]
+  188 | try_block
+      | ^~~~~~~~~
+prob1.y:192.1-16: warning: nonterminal useless in grammar: catch_block_list [-Wother]
+  192 | catch_block_list
+      | ^~~~~~~~~~~~~~~~
+prob1.y:197.1-11: warning: nonterminal useless in grammar: catch_block [-Wother]
+  197 | catch_block
+      | ^~~~~~~~~~~
+prob1.y: warning: 76 shift/reduce conflicts [-Wconflicts-sr]
+prob1.y: note: rerun with option '-Wcounterexamples' to generate conflict counterexamples
+lex prob1.l
+gcc -w y.tab.c lex.yy.c  -ll -ly  -o parser
