@@ -1,127 +1,128 @@
-D			[0-9]
-L			[a-zA-Z_]
-H			[a-fA-F0-9]
-E			[Ee][+-]?{D}+
-FS			(f|F|l|L)
-IS			(u|U|l|L)*
+D			[0-9]       // Decimal digit (0-9)
+L			[a-zA-Z_]   // Letters (uppercase, lowercase) or underscore
+H			[a-fA-F0-9] // Hexadecimal digit (0-9, a-f, A-F)
+E			[Ee][+-]?{D}+  // Exponent part in scientific notation (E or e, optional sign, followed by digits)
+FS			(f|F|l|L)  // Floating point or long specifiers
+IS			(u|U|l|L)* // Integer or size specifiers
 
 %{
 #include <stdio.h>
 #include "y.tab.h"
 
+// Function to count characters in the input
 void count();
 %}
 
 %%
-"/*"			{ comment(); }
-"auto"			{ count(); return(AUTO); }
-"break"			{ count(); return(BREAK); }
-"case"			{ count(); return(CASE); }
-"char"			{ count(); return(CHAR); }
-"class"			{ count(); return(CLASS); }
-"const"			{ count(); return(CONST); }
-"continue"		{ count(); return(CONTINUE); }
-"default"		{ count(); return(DEFAULT); }
-"delete"		{ count(); return(DELETE); }
-"do"			{ count(); return(DO); }
-"double"		{ count(); return(DOUBLE); }
-"else"			{ count(); return(ELSE); }
-"enum"			{ count(); return(ENUM); }
-"extern"		{ count(); return(EXTERN); }
-"float"			{ count(); return(FLOAT); }
-"for"			{ count(); return(FOR); }
-"friend"		{ count(); return(FRIEND); }
-"goto"			{ count(); return(GOTO); }
-"if"			{ count(); return(IF); }
-"int"			{ count(); return(INT); }
-"long"			{ count(); return(LONG); }
-"main"			{count(); return(MAIN);}
-"namespace"		{ count(); return(NAMESPACE); }
-"new"			{ count(); return(NEW); }
-"operator"		{ count(); return(OPERATOR); }
-"private"		{ count(); return(PRIVATE); }
-"protected"		{ count(); return(PROTECTED); }
-"public"		{ count(); return(PUBLIC); }
-"register"		{ count(); return(REGISTER); }
-"return"		{ count(); return(RETURN); }
-"short"			{ count(); return(SHORT); }
-"signed"		{ count(); return(SIGNED); }
-"sizeof"		{ count(); return(SIZEOF); }
-"static"		{ count(); return(STATIC); }
-"struct"		{ count(); return(STRUCT); }
-"switch"		{ count(); return(SWITCH); }
-"template"		{ count(); return(TEMPLATE); }
-"this"			{ count(); return(THIS); }
-"throw"			{ count(); return(THROW); }
-"try"			{ count(); return(TRY); }
-"typedef"		{ count(); return(TYPEDEF); }
-"union"			{ count(); return(UNION); }
-"unsigned"		{ count(); return(UNSIGNED); }
-"using"			{ count(); return(USING); }
-"virtual"		{ count(); return(VIRTUAL); }
-"void"			{ count(); return(VOID); }
-"volatile"		{ count(); return(VOLATILE); }
-"while"			{ count(); return(WHILE); }
+"/*"			{ comment(); }  // Start of a multi-line comment
+"auto"			{ count(); return(AUTO); }  // 'auto' keyword in C/C++
+"break"			{ count(); return(BREAK); } // 'break' keyword to exit loops or switch cases
+"case"			{ count(); return(CASE); }  // 'case' keyword for switch statements
+"char"			{ count(); return(CHAR); }  // 'char' keyword for character data type
+"class"			{ count(); return(CLASS); } // 'class' keyword for defining a class in C++
+"const"			{ count(); return(CONST); } // 'const' keyword for constant variables
+"continue"		{ count(); return(CONTINUE); } // 'continue' keyword to skip current iteration of a loop
+"default"		{ count(); return(DEFAULT); } // 'default' keyword for switch statement
+"delete"		{ count(); return(DELETE); } // 'delete' keyword for deallocating memory in C++
+"do"			{ count(); return(DO); } // 'do' keyword for do-while loops
+"double"		{ count(); return(DOUBLE); } // 'double' keyword for double precision floating point numbers
+"else"			{ count(); return(ELSE); } // 'else' keyword for alternative condition in if statements
+"enum"			{ count(); return(ENUM); } // 'enum' keyword for defining enumerations
+"extern"		{ count(); return(EXTERN); } // 'extern' keyword for declaring external variables
+"float"			{ count(); return(FLOAT); } // 'float' keyword for floating point data type
+"for"			{ count(); return(FOR); } // 'for' keyword for loops
+"friend"		{ count(); return(FRIEND); } // 'friend' keyword for C++ classes
+"goto"			{ count(); return(GOTO); } // 'goto' keyword for unconditional jumps
+"if"			{ count(); return(IF); } // 'if' keyword for conditional branching
+"int"			{ count(); return(INT); } // 'int' keyword for integer data type
+"long"			{ count(); return(LONG); } // 'long' keyword for long integer types
+"main"			{ count(); return(MAIN); } // 'main' function identifier
+"namespace"		{ count(); return(NAMESPACE); } // 'namespace' keyword for C++ namespaces
+"new"			{ count(); return(NEW); } // 'new' keyword for dynamic memory allocation in C++
+"operator"		{ count(); return(OPERATOR); } // 'operator' keyword for operator overloading in C++
+"private"		{ count(); return(PRIVATE); } // 'private' keyword for C++ class access specifier
+"protected"		{ count(); return(PROTECTED); } // 'protected' keyword for C++ class access specifier
+"public"		{ count(); return(PUBLIC); } // 'public' keyword for C++ class access specifier
+"register"		{ count(); return(REGISTER); } // 'register' keyword for register variables
+"return"		{ count(); return(RETURN); } // 'return' keyword to exit from a function
+"short"			{ count(); return(SHORT); } // 'short' keyword for short integer type
+"signed"		{ count(); return(SIGNED); } // 'signed' keyword for signed integer type
+"sizeof"		{ count(); return(SIZEOF); } // 'sizeof' keyword for determining the size of a data type
+"static"		{ count(); return(STATIC); } // 'static' keyword for static variables or functions
+"struct"		{ count(); return(STRUCT); } // 'struct' keyword for defining a structure
+"switch"		{ count(); return(SWITCH); } // 'switch' keyword for multi-way branching
+"template"		{ count(); return(TEMPLATE); } // 'template' keyword for defining templates in C++
+"this"			{ count(); return(THIS); } // 'this' pointer in C++
+"throw"			{ count(); return(THROW); } // 'throw' keyword for exceptions
+"try"			{ count(); return(TRY); } // 'try' keyword for exception handling
+"typedef"		{ count(); return(TYPEDEF); } // 'typedef' keyword for type definition
+"union"			{ count(); return(UNION); } // 'union' keyword for unions
+"unsigned"		{ count(); return(UNSIGNED); } // 'unsigned' keyword for unsigned integers
+"using"			{ count(); return(USING); } // 'using' keyword for importing namespaces or type aliases
+"virtual"		{ count(); return(VIRTUAL); } // 'virtual' keyword for virtual functions in C++
+"void"			{ count(); return(VOID); } // 'void' keyword for empty data type or function return type
+"volatile"		{ count(); return(VOLATILE); } // 'volatile' keyword for volatile variables
+"while"			{ count(); return(WHILE); } // 'while' keyword for loops
 
-{L}({L}|{D})*		{ count(); return(check_type()); }
+{L}({L}|{D})*		{ count(); return(check_type()); } // Identifier (starting with a letter, followed by letters or digits)
 
-0[xX]{H}+{IS}?		{ count(); return(CONSTANT); }
-0{D}+{IS}?		{ count(); return(CONSTANT); }
-{D}+{IS}?		{ count(); return(CONSTANT); }
-L?'(\\.|[^\\'])+'	{ count(); return(CONSTANT); }
+0[xX]{H}+{IS}?		{ count(); return(CONSTANT); } // Hexadecimal constant
+0{D}+{IS}?		{ count(); return(CONSTANT); } // Octal or decimal constant
+{D}+{IS}?		{ count(); return(CONSTANT); } // Decimal constant
+L?'(\\.|[^\\'])+'	{ count(); return(CONSTANT); } // Character constant
 
-{D}+{E}{FS}?		{ count(); return(CONSTANT); }
-{D}*"."{D}+({E})?{FS}?	{ count(); return(CONSTANT); }
-{D}+"."{D}*({E})?{FS}?	{ count(); return(CONSTANT); }
+{D}+{E}{FS}?		{ count(); return(CONSTANT); } // Floating-point constant with exponent
+{D}*"."{D}+({E})?{FS}?	{ count(); return(CONSTANT); } // Floating-point constant with decimal point
+{D}+"."{D}*({E})?{FS}?	{ count(); return(CONSTANT); } // Floating-point constant with leading digit
 
-L?\"(\\.|[^\\"])*\"	{ count(); return(STRING_LITERAL); }
+L?\"(\\.|[^\\"])*\"	{ count(); return(STRING_LITERAL); } // String literal
 
-"..."			{ count(); return(ELLIPSIS); }
-">>="			{ count(); return(RIGHT_ASSIGN); }
-"<<="			{ count(); return(LEFT_ASSIGN); }
-"+="			{ count(); return(ADD_ASSIGN); }
-"-="			{ count(); return(SUB_ASSIGN); }
-"*="			{ count(); return(MUL_ASSIGN); }
-"/="			{ count(); return(DIV_ASSIGN); }
-"%="			{ count(); return(MOD_ASSIGN); }
-"&="			{ count(); return(AND_ASSIGN); }
-"^="			{ count(); return(XOR_ASSIGN); }
-"|="			{ count(); return(OR_ASSIGN); }
-">>"			{ count(); return(RIGHT_OP); }
-"<<"			{ count(); return(LEFT_OP); }
-"++"			{ count(); return(INC_OP); }
-"--"			{ count(); return(DEC_OP); }
-"->"			{ count(); return(PTR_OP); }
-"&&"			{ count(); return(AND_OP); }
-"||"			{ count(); return(OR_OP); }
-"<="			{ count(); return(LE_OP); }
-">="			{ count(); return(GE_OP); }
-"=="			{ count(); return(EQ_OP); }
-"!="			{ count(); return(NE_OP); }
-";"			{ count(); return(';'); }
-("{"|"<%")		{ count(); return('{'); }
-("}"|"%>")		{ count(); return('}'); }
-","			{ count(); return(','); }
-":"			{ count(); return(':'); }
-"="			{ count(); return('='); }
-"("			{ count(); return('('); }
-")"			{ count(); return(')'); }
-("["|"<:")		{ count(); return('['); }
-("]"|":>")		{ count(); return(']'); }
-"."			{ count(); return('.'); }
-"&"			{ count(); return('&'); }
-"!"			{ count(); return('!'); }
-"~"			{ count(); return('~'); }
-"-"			{ count(); return('-'); }
-"+"			{ count(); return('+'); }
-"*"			{ count(); return('*'); }
-"/"			{ count(); return('/'); }
-"%"			{ count(); return('%'); }
-"<"			{ count(); return('<'); }
-">"			{ count(); return('>'); }
-"^"			{ count(); return('^'); }
-"|"			{ count(); return('|'); }
-"?"			{ count(); return('?'); }
+"..."			{ count(); return(ELLIPSIS); } // Ellipsis '...'
+">>="			{ count(); return(RIGHT_ASSIGN); } // Right shift assignment '>>='
+"<<="			{ count(); return(LEFT_ASSIGN); } // Left shift assignment '<<='
+"+="			{ count(); return(ADD_ASSIGN); } // Addition assignment '+='
+"-="			{ count(); return(SUB_ASSIGN); } // Subtraction assignment '-='
+"*="			{ count(); return(MUL_ASSIGN); } // Multiplication assignment '*='
+"/="			{ count(); return(DIV_ASSIGN); } // Division assignment '/='
+"%="			{ count(); return(MOD_ASSIGN); } // Modulus assignment '%='
+"&="			{ count(); return(AND_ASSIGN); } // Bitwise AND assignment '&='
+"^="			{ count(); return(XOR_ASSIGN); } // Bitwise XOR assignment '^='
+"|="			{ count(); return(OR_ASSIGN); } // Bitwise OR assignment '|='
+">>"			{ count(); return(RIGHT_OP); } // Right shift operator '>>'
+"<<"			{ count(); return(LEFT_OP); } // Left shift operator '<<'
+"++"			{ count(); return(INC_OP); } // Increment operator '++'
+"--"			{ count(); return(DEC_OP); } // Decrement operator '--'
+"->"			{ count(); return(PTR_OP); } // Pointer operator '->'
+"&&"			{ count(); return(AND_OP); } // Logical AND operator '&&'
+"||"			{ count(); return(OR_OP); } // Logical OR operator '||'
+"<="			{ count(); return(LE_OP); } // Less than or equal to '<='
+">="			{ count(); return(GE_OP); } // Greater than or equal to '>='
+"=="			{ count(); return(EQ_OP); } // Equality operator '=='
+"!="			{ count(); return(NE_OP); } // Inequality operator '!='
+";"			{ count(); return(';'); } // Semicolon ';'
+("{"|"<%")		{ count(); return('{'); } // Opening brace '{' or alternative opening brace '<%'
+("}"|"%>")		{ count(); return('}'); } // Closing brace '}' or alternative closing brace '%>'
+","			{ count(); return(','); } // Comma ','
+":"			{ count(); return(':'); } // Colon ':'
+"="			{ count(); return('='); } // Assignment operator '='
+"("			{ count(); return('('); } // Opening parenthesis '('
+")"			{ count(); return(')'); } // Closing parenthesis ')'
+"["			{ count(); return('['); } // Opening square bracket '['
+"]"			{ count(); return(']'); } // Closing square bracket ']'
+"."			{ count(); return('.'); } // Dot operator '.'
+"&"			{ count(); return('&'); } // Bitwise AND '&'
+"!"			{ count(); return('!'); } // Logical NOT '!'
+"~"			{ count(); return('~'); } // Bitwise NOT '~'
+"-"			{ count(); return('-'); } // Subtraction or unary minus '-'
+"+"			{ count(); return('+'); } // Addition or unary plus '+'
+"*"			{ count(); return('*'); } // Multiplication '*'
+"/"			{ count(); return('/'); } // Division '/'
+"%"			{ count(); return('%'); } // Modulus operator '%'
+"<"			{ count(); return('<'); } // Less than operator '<'
+">"			{ count(); return('>'); } // Greater than operator '>'
+"^"			{ count(); return('^'); } // Bitwise XOR '^'
+"|"			{ count(); return('|'); } // Bitwise OR '|'
+"?"			{ count(); return('?'); } // Ternary conditional operator '?'
 
 [ \t\v\n\f]		{ count(); }
 .			{ /* ignore bad characters */ }
