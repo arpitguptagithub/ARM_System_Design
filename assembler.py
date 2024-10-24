@@ -1001,7 +1001,10 @@ class Assembler:
         else:
             raise ValueError(f"Unknown instruction: {instruction}")
 
-    def assemble(self, source_code):
+    def assemble(self, src_file_path):
+        with open(src_file_path, 'r') as f:
+            source_code = f.read()
+            
         self.first_pass(source_code)
         self.second_pass()
         return self.machine_code
@@ -1009,11 +1012,6 @@ class Assembler:
 
 # Example usage
 if __name__ == "__main__":
-    source_code = """
-    start:
-   ADCS    R4 ,R0,R0 
-    """
-    
     assembler = Assembler()
-    machine_code = assembler.assemble(source_code)
+    machine_code = assembler.assemble("vmout.asm")
     print(f"Machine code: {machine_code}")
