@@ -1,207 +1,216 @@
-D			[0-9]       // Decimal digit (0-9)
-L			[a-zA-Z_]   // Letters (uppercase, lowercase) or underscore
-H			[a-fA-F0-9] // Hexadecimal digit (0-9, a-f, A-F)
-E			[Ee][+-]?{D}+  // Exponent part in scientific notation (E or e, optional sign, followed by digits)
-FS			(f|F|l|L)  // Floating point or long specifiers
-IS			(u|U|l|L)* // Integer or size specifiers
-
 %{
+// Standard header files for input/output and to include the parser file.
 #include <stdio.h>
 #include "y.tab.h"
 
-// Function to count characters in the input
-void count();
+// Counter variable used to track some metrics, such as the number of tokens encountered (if needed).
+int countn = 0;
+
 %}
 
-%%
-"/*"			{ comment(); }  // Start of a multi-line comment
-"auto"			{ count(); return(AUTO); }  // 'auto' keyword in C/C++
-"break"			{ count(); return(BREAK); } // 'break' keyword to exit loops or switch cases
-"case"			{ count(); return(CASE); }  // 'case' keyword for switch statements
-"char"			{ count(); return(CHAR); }  // 'char' keyword for character data type
-"class"			{ count(); return(CLASS); } // 'class' keyword for defining a class in C++
-"const"			{ count(); return(CONST); } // 'const' keyword for constant variables
-"continue"		{ count(); return(CONTINUE); } // 'continue' keyword to skip current iteration of a loop
-"default"		{ count(); return(DEFAULT); } // 'default' keyword for switch statement
-"delete"		{ count(); return(DELETE); } // 'delete' keyword for deallocating memory in C++
-"do"			{ count(); return(DO); } // 'do' keyword for do-while loops
-"double"		{ count(); return(DOUBLE); } // 'double' keyword for double precision floating point numbers
-"else"			{ count(); return(ELSE); } // 'else' keyword for alternative condition in if statements
-"enum"			{ count(); return(ENUM); } // 'enum' keyword for defining enumerations
-"extern"		{ count(); return(EXTERN); } // 'extern' keyword for declaring external variables
-"float"			{ count(); return(FLOAT); } // 'float' keyword for floating point data type
-"for"			{ count(); return(FOR); } // 'for' keyword for loops
-"friend"		{ count(); return(FRIEND); } // 'friend' keyword for C++ classes
-"goto"			{ count(); return(GOTO); } // 'goto' keyword for unconditional jumps
-"if"			{ count(); return(IF); } // 'if' keyword for conditional branching
-"int"			{ count(); return(INT); } // 'int' keyword for integer data type
-"long"			{ count(); return(LONG); } // 'long' keyword for long integer types
-"main"			{ count(); return(MAIN); } // 'main' function identifier
-"namespace"		{ count(); return(NAMESPACE); } // 'namespace' keyword for C++ namespaces
-"new"			{ count(); return(NEW); } // 'new' keyword for dynamic memory allocation in C++
-"operator"		{ count(); return(OPERATOR); } // 'operator' keyword for operator overloading in C++
-"private"		{ count(); return(PRIVATE); } // 'private' keyword for C++ class access specifier
-"protected"		{ count(); return(PROTECTED); } // 'protected' keyword for C++ class access specifier
-"public"		{ count(); return(PUBLIC); } // 'public' keyword for C++ class access specifier
-"register"		{ count(); return(REGISTER); } // 'register' keyword for register variables
-"return"		{ count(); return(RETURN); } // 'return' keyword to exit from a function
-"short"			{ count(); return(SHORT); } // 'short' keyword for short integer type
-"signed"		{ count(); return(SIGNED); } // 'signed' keyword for signed integer type
-"sizeof"		{ count(); return(SIZEOF); } // 'sizeof' keyword for determining the size of a data type
-"static"		{ count(); return(STATIC); } // 'static' keyword for static variables or functions
-"struct"		{ count(); return(STRUCT); } // 'struct' keyword for defining a structure
-"switch"		{ count(); return(SWITCH); } // 'switch' keyword for multi-way branching
-"template"		{ count(); return(TEMPLATE); } // 'template' keyword for defining templates in C++
-"this"			{ count(); return(THIS); } // 'this' pointer in C++
-"throw"			{ count(); return(THROW); } // 'throw' keyword for exceptions
-"try"			{ count(); return(TRY); } // 'try' keyword for exception handling
-"typedef"		{ count(); return(TYPEDEF); } // 'typedef' keyword for type definition
-"union"			{ count(); return(UNION); } // 'union' keyword for unions
-"unsigned"		{ count(); return(UNSIGNED); } // 'unsigned' keyword for unsigned integers
-"using"			{ count(); return(USING); } // 'using' keyword for importing namespaces or type aliases
-"virtual"		{ count(); return(VIRTUAL); } // 'virtual' keyword for virtual functions in C++
-"void"			{ count(); return(VOID); } // 'void' keyword for empty data type or function return type
-"volatile"		{ count(); return(VOLATILE); } // 'volatile' keyword for volatile variables
-"while"			{ count(); return(WHILE); } // 'while' keyword for loops
+// Definition of regular expressions for different token types.
 
-{L}({L}|{D})*		{ count(); return(check_type()); } // Identifier (starting with a letter, followed by letters or digits)
+// D defines any digit from 0-9.
+D			[0-9]
 
-0[xX]{H}+{IS}?		{ count(); return(CONSTANT); } // Hexadecimal constant
-0{D}+{IS}?		{ count(); return(CONSTANT); } // Octal or decimal constant
-{D}+{IS}?		{ count(); return(CONSTANT); } // Decimal constant
-L?'(\\.|[^\\'])+'	{ count(); return(CONSTANT); } // Character constant
+// 'digits' token is one or more digits.
+digits		{D}+
 
-{D}+{E}{FS}?		{ count(); return(CONSTANT); } // Floating-point constant with exponent
-{D}*"."{D}+({E})?{FS}?	{ count(); return(CONSTANT); } // Floating-point constant with decimal point
-{D}+"."{D}*({E})?{FS}?	{ count(); return(CONSTANT); } // Floating-point constant with leading digit
+// 'Letter' defines any alphabetic character or underscore.
+Letter			[a-zA-Z_]
 
-L?\"(\\.|[^\\"])*\"	{ count(); return(STRING_LITERAL); } // String literal
+// L represents an alphabetic character or underscore, same as Letter.
+L			[a-zA-Z_]
 
-"..."			{ count(); return(ELLIPSIS); } // Ellipsis '...'
-">>="			{ count(); return(RIGHT_ASSIGN); } // Right shift assignment '>>='
-"<<="			{ count(); return(LEFT_ASSIGN); } // Left shift assignment '<<='
-"+="			{ count(); return(ADD_ASSIGN); } // Addition assignment '+='
-"-="			{ count(); return(SUB_ASSIGN); } // Subtraction assignment '-='
-"*="			{ count(); return(MUL_ASSIGN); } // Multiplication assignment '*='
-"/="			{ count(); return(DIV_ASSIGN); } // Division assignment '/='
-"%="			{ count(); return(MOD_ASSIGN); } // Modulus assignment '%='
-"&="			{ count(); return(AND_ASSIGN); } // Bitwise AND assignment '&='
-"^="			{ count(); return(XOR_ASSIGN); } // Bitwise XOR assignment '^='
-"|="			{ count(); return(OR_ASSIGN); } // Bitwise OR assignment '|='
-">>"			{ count(); return(RIGHT_OP); } // Right shift operator '>>'
-"<<"			{ count(); return(LEFT_OP); } // Left shift operator '<<'
-"++"			{ count(); return(INC_OP); } // Increment operator '++'
-"--"			{ count(); return(DEC_OP); } // Decrement operator '--'
-"->"			{ count(); return(PTR_OP); } // Pointer operator '->'
-"&&"			{ count(); return(AND_OP); } // Logical AND operator '&&'
-"||"			{ count(); return(OR_OP); } // Logical OR operator '||'
-"<="			{ count(); return(LE_OP); } // Less than or equal to '<='
-">="			{ count(); return(GE_OP); } // Greater than or equal to '>='
-"=="			{ count(); return(EQ_OP); } // Equality operator '=='
-"!="			{ count(); return(NE_OP); } // Inequality operator '!='
-";"			{ count(); return(';'); } // Semicolon ';'
-("{"|"<%")		{ count(); return('{'); } // Opening brace '{' or alternative opening brace '<%'
-("}"|"%>")		{ count(); return('}'); } // Closing brace '}' or alternative closing brace '%>'
-","			{ count(); return(','); } // Comma ','
-":"			{ count(); return(':'); } // Colon ':'
-"="			{ count(); return('='); } // Assignment operator '='
-"("			{ count(); return('('); } // Opening parenthesis '('
-")"			{ count(); return(')'); } // Closing parenthesis ')'
-"["			{ count(); return('['); } // Opening square bracket '['
-"]"			{ count(); return(']'); } // Closing square bracket ']'
-"."			{ count(); return('.'); } // Dot operator '.'
-"&"			{ count(); return('&'); } // Bitwise AND '&'
-"!"			{ count(); return('!'); } // Logical NOT '!'
-"~"			{ count(); return('~'); } // Bitwise NOT '~'
-"-"			{ count(); return('-'); } // Subtraction or unary minus '-'
-"+"			{ count(); return('+'); } // Addition or unary plus '+'
-"*"			{ count(); return('*'); } // Multiplication '*'
-"/"			{ count(); return('/'); } // Division '/'
-"%"			{ count(); return('%'); } // Modulus operator '%'
-"<"			{ count(); return('<'); } // Less than operator '<'
-">"			{ count(); return('>'); } // Greater than operator '>'
-"^"			{ count(); return('^'); } // Bitwise XOR '^'
-"|"			{ count(); return('|'); } // Bitwise OR '|'
-"?"			{ count(); return('?'); } // Ternary conditional operator '?'
+// H represents a hexadecimal digit (0-9, a-f, A-F).
+H			[a-fA-F0-9]
 
-[ \t\v\n\f]		{ count(); } 
-.			{ /* ignore bad characters */ }
+// E defines a scientific notation for floating-point numbers.
+E			[Ee][+-]?{D}+
+
+// FS represents a floating-point suffix such as f, F, l, or L.
+FS			(f|F|l|L)
+
+// IS represents integer suffixes like u, U, l, L.
+IS			(u|U|l|L)*
+
+// integer defines an integer token which could be a regular number or one with scientific notation.
+integer			{digits}|[+-]?({digits}(E|e)[+-]?{digits}) 
+
+// drown represents a floating-point number token with optional scientific notation.
+drown			[-]?({digits}\.{digits})((E|e)[+-]?{digits})?
+
+// char defines a single character enclosed in single quotes.
+char			'[a-zA-Z]?'
+
+// string defines a string of characters enclosed in double quotes.
+string			(\"([^"\\\n]|(\\['"\?\\abfnrtv]))*\")+ 
+
+// bool represents boolean constants: true or false.
+bool			true|false
+
+// identifier defines a variable name starting with a letter or underscore, followed by alphanumeric characters or underscores.
+identifier		{Letter}({Letter}|{D})*
 
 %%
 
-// Function to skip over whitespace characters (space, tab, vertical tab, newline, form feed).
-// These are passed to the count() function for column tracking purposes.
-[ \t\v\n\f]		{ count(); }
+// Token rules section: Each rule returns a corresponding token type to the parser.
 
-// Catch-all rule for unrecognized or bad characters that are ignored.
-// It prevents them from causing errors in lexical analysis.
-.			{ /* ignore bad characters */ }
+// Keyword token rules: Each keyword is mapped to a specific token.
+// strcpy is used to store the matched keyword lexeme.
+"auto"			{ strcpy(yylval.node.lexeme, yytext); return(AUTO); }
+"break"			{ strcpy(yylval.node.lexeme, yytext); return(BREAK); }
+"case"			{ strcpy(yylval.node.lexeme, yytext); return(CASE); }
+"char"			{ strcpy(yylval.node.lexeme, yytext); return(CHAR); }
+"class"			{ strcpy(yylval.node.lexeme, yytext); return(CLASS); }
+"const"			{ strcpy(yylval.node.lexeme, yytext); return(CONST); }
+"continue"		{ strcpy(yylval.node.lexeme, yytext); return(CONTINUE); }
+"default"		{ strcpy(yylval.node.lexeme, yytext); return(DEFAULT); }
+"delete"		{ strcpy(yylval.node.lexeme, yytext); return(DELETE); }
+"do"			{ strcpy(yylval.node.lexeme, yytext); return(DO); }
+"double"		{ strcpy(yylval.node.lexeme, yytext); return(DOUBLE); }
+"ELSE"			{ strcpy(yylval.node.lexeme, yytext); return(ELSE); }
+"enum"			{ strcpy(yylval.node.lexeme, yytext); return(ENUM); }
+"extern"		{ strcpy(yylval.node.lexeme, yytext); return(EXTERN); }
+"float"			{ strcpy(yylval.node.lexeme, yytext); return(FLOAT); }
+"FOR"			{ strcpy(yylval.node.lexeme, yytext); return(FOR); }
+"friend"		{ strcpy(yylval.node.lexeme, yytext); return(FRIEND); }
+"function"      { strcpy(yylval.node.lexeme, yytext); return(FUNCTION); }
+"goto"			{ strcpy(yylval.node.lexeme, yytext); return(GOTO); }
+"IF"			{ strcpy(yylval.node.lexeme, yytext); return(IF); }
+"int"			{ strcpy(yylval.node.lexeme, yytext); return(INT); }
+"long"			{ strcpy(yylval.node.lexeme, yytext); return(LONG); }
+"main"			{ strcpy(yylval.node.lexeme, yytext); return(MAIN); }
+"method"        { strcpy(yylval.node.lexeme, yytext); return(METHOD); }
+"namespace"		{ strcpy(yylval.node.lexeme, yytext); return(NAMESPACE); }
+"new"			{ strcpy(yylval.node.lexeme, yytext); return(NEW); }
+"operator"		{ strcpy(yylval.node.lexeme, yytext); return(OPERATOR); }
+"PRINT" 		{ strcpy(yylval.node.lexeme, yytext); return(PRINT); }
+"private"		{ strcpy(yylval.node.lexeme, yytext); return(PRIVATE); }
+"protected"		{ strcpy(yylval.node.lexeme, yytext); return(PROTECTED); }
+"public"		{ strcpy(yylval.node.lexeme, yytext); return(PUBLIC); }
+"register"		{ strcpy(yylval.node.lexeme, yytext); return(REGISTER); }
+"RETURN"		{ strcpy(yylval.node.lexeme, yytext); return(RETURN); }
+"SCAN"			{ strcpy(yylval.node.lexeme, yytext); return(SCAN); }
+"short"			{ strcpy(yylval.node.lexeme, yytext); return(SHORT); }
+"signed"		{ strcpy(yylval.node.lexeme, yytext); return(SIGNED); }
+"sizeof"		{ strcpy(yylval.node.lexeme, yytext); return(SIZEOF); }
+"static"		{ strcpy(yylval.node.lexeme, yytext); return(STATIC); }
+"struct"		{ strcpy(yylval.node.lexeme, yytext); return(STRUCT); }
+"switch"		{ strcpy(yylval.node.lexeme, yytext); return(SWITCH); }
+"template"		{ strcpy(yylval.node.lexeme, yytext); return(TEMPLATE); }
+"this"			{ strcpy(yylval.node.lexeme, yytext); return(THIS); }
+"throw"			{ strcpy(yylval.node.lexeme, yytext); return(THROW); }
+"try"			{ strcpy(yylval.node.lexeme, yytext); return(TRY); }
+"typedef"		{ strcpy(yylval.node.lexeme, yytext); return(TYPEDEF); }
+"union"			{ strcpy(yylval.node.lexeme, yytext); return(UNION); }
+"unsigned"		{ strcpy(yylval.node.lexeme, yytext); return(UNSIGNED); }
+"using"			{ strcpy(yylval.node.lexeme, yytext); return(USING); }
+"virtual"		{ strcpy(yylval.node.lexeme, yytext); return(VIRTUAL); }
+"void"			{ strcpy(yylval.node.lexeme, yytext); return(VOID); }
+"volatile"		{ strcpy(yylval.node.lexeme, yytext); return(VOLATILE); }
+"WHILE"			{ strcpy(yylval.node.lexeme, yytext); return(WHILE); }
 
-%%
-
-//Function to handle comments in the input. 
-//It will print characters until it encounters a '*' followed by '/' which marks the end of the comment.
-comment()
-{
-	char c, c1;
-
-loop:
-	// Loop to read characters one by one until a '*' is found.
-	while ((c = input()) != '*' && c != 0)
-		// Print the character to output.
-		putchar(c);
-
-	// After encountering '*', check if the next character is '/' (the end of a comment).
-	if ((c1 = input()) != '/' && c != 0)
-	{
-		// If it's not '/', put the character back in the input stream and go back to the loop.
-		unput(c1);
-		goto loop;
-	}
-
-	// If we reach the end of the comment, output the '/'.
-	if (c != 0)
-		putchar(c1);
+// Handling variable identifiers.
+{L}({L}|{D})*		{
+     strcpy(yylval.node.lexeme, yytext);
+		return IDENTIFIER;
 }
 
-//Variable to keep track of the current column in the input (used for formatting/tab alignment).
-int column = 0;
+// Handling character literals.
+{char}				{ 
+						strcpy(yylval.node.lexeme, yytext);
+						return C_CONST;
+					}
 
-//Function to count the number of characters processed and update the column position accordingly.
-void count()
-{
-	int i;
+// Handling string literals.
+{string}			{ 	
+						strcpy(yylval.node.lexeme, yytext);
+						return S_CONST;
+					}
 
-	// Loop through the characters in the matched text (yytext).
-	for (i = 0; yytext[i] != '\0'; i++)
-	{
-		// If a newline is found, reset the column count (since it's a new line).
-		if (yytext[i] == '\n')
-			column = 0;
-		// If a tab is found, increase the column based on tab spacing (usually 8 spaces).
-		else if (yytext[i] == '\t')
-			column += 8 - (column % 8);
-		// For all other characters, simply increment the column count.
-		else
-			column++;
-	}
+// Handling boolean constants.
+{bool}				{ 	
+						strcpy(yylval.node.lexeme, yytext);
+						return B_CONST;
+					}
+
+// Handling integer constants.
+{integer}			{
+						strcpy(yylval.node.lexeme, yytext);
+						return I_CONST;
+					}
+
+// Handling floating-point constants (e.g., numbers with decimal points).
+{drown}				{
+						strcpy(yylval.node.lexeme, yytext);
+						return F_CONST;
+					}
+
+// Operator and punctuation rules: These return the corresponding operator or punctuation token.
+
+"..."			{ strcpy(yylval.node.lexeme, yytext); return(ELLIPSIS); }
+">>="			{ strcpy(yylval.node.lexeme, yytext); return(RIGHT_ASSIGN); }
+"<<="			{ strcpy(yylval.node.lexeme, yytext); return(LEFT_ASSIGN); }
+"+="			{ strcpy(yylval.node.lexeme, yytext); return(ADD_ASSIGN); }
+"-="			{ strcpy(yylval.node.lexeme, yytext); return(SUB_ASSIGN); }
+"*="			{ strcpy(yylval.node.lexeme, yytext); return(MUL_ASSIGN); }
+"/="			{ strcpy(yylval.node.lexeme, yytext); return(DIV_ASSIGN); }
+"%="			{ strcpy(yylval.node.lexeme, yytext); return(MOD_ASSIGN); }
+"&="			{ strcpy(yylval.node.lexeme, yytext); return(AND_ASSIGN); }
+"^="			{ strcpy(yylval.node.lexeme, yytext); return(XOR_ASSIGN); }
+"|="			{ strcpy(yylval.node.lexeme, yytext); return(OR_ASSIGN); }
+"&&"			{ strcpy(yylval.node.lexeme, yytext); return(AND_OP); }
+"||"			{ strcpy(yylval.node.lexeme, yytext); return(OR_OP); }
+">="			{ strcpy(yylval.node.lexeme, yytext); return(GE_OP); }
+"<="			{ strcpy(yylval.node.lexeme, yytext); return(LE_OP); }
+"++"			{ strcpy(yylval.node.lexeme, yytext); return(INC_OP); }
+"--"			{ strcpy(yylval.node.lexeme, yytext); return(DEC_OP); }
+"->"			{ strcpy(yylval.node.lexeme, yytext); return(PTR_OP); }
+"<<"			{ strcpy(yylval.node.lexeme, yytext); return(LEFT_OP); }
+">>"			{ strcpy(yylval.node.lexeme, yytext); return(RIGHT_OP); }
+"=="			{ strcpy(yylval.node.lexeme, yytext); return(EQ_OP); }
+"!="			{ strcpy(yylval.node.lexeme, yytext); return(NE_OP); }
+";"				{ strcpy(yylval.node.lexeme, yytext); return(SEMICOLON); }
+"{"				{ strcpy(yylval.node.lexeme, yytext); return(LCURLY); }
+"}"				{ strcpy(yylval.node.lexeme, yytext); return(RCURLY); }
+"["				{ strcpy(yylval.node.lexeme, yytext); return(LBRACK); }
+"]"				{ strcpy(yylval.node.lexeme, yytext); return(RBRACK); }
+"("				{ strcpy(yylval.node.lexeme, yytext); return(LPAREN); }
+")"				{ strcpy(yylval.node.lexeme, yytext); return(RPAREN); }
+"."				{ strcpy(yylval.node.lexeme, yytext); return(DOT); }
+"&"				{ strcpy(yylval.node.lexeme, yytext); return(AMPERSAND); }
+"!"				{ strcpy(yylval.node.lexeme, yytext); return(EXCL); }
+"~"				{ strcpy(yylval.node.lexeme, yytext); return(TILDE); }
+"-"				{ strcpy(yylval.node.lexeme, yytext); return(MINUS); }
+"+"				{ strcpy(yylval.node.lexeme, yytext); return(PLUS); }
+"*"				{ strcpy(yylval.node.lexeme, yytext); return(STAR); }
+"/"				{ strcpy(yylval.node.lexeme, yytext); return(SLASH); }
+"%"				{ strcpy(yylval.node.lexeme, yytext); return(PERCENT); }
+"<"				{ strcpy(yylval.node.lexeme, yytext); return(LT); }
+">"				{ strcpy(yylval.node.lexeme, yytext); return(GT); }
+"^"				{ strcpy(yylval.node.lexeme, yytext); return(CARET); }
+"|"				{ strcpy(yylval.node.lexeme, yytext); return(BAR); }
+"?"				{ strcpy(yylval.node.lexeme, yytext); return(QUESTION); }
+":"				{ strcpy(yylval.node.lexeme, yytext); return(COLON); }
+"="				{ strcpy(yylval.node.lexeme, yytext); return(EQUAL); }
+","				{ strcpy(yylval.node.lexeme, yytext); return(COMMA); }
+
+// Handling whitespace (space, tab, newline). We simply skip these characters.
+[ \t\n]			{ /* Skip whitespace characters */ }
+
+// Handling unrecognized characters.
+.				{ printf("Unknown character: %s\n", yytext); }
+
+%%
+
+// Main function, used to run the lexical analyzer.
+int yywrap(void) {
+    return 1;
 }
 
-//Function to check the type of identifier (like if it's a type name or a regular identifier).
-int check_type()
-{
-	/*
-	 * Pseudo code that explains what this function should do:
-	 *
-	 *	if (yytext == type_name)  // Check if the matched text is a type name.
-	 *		return(TYPE_NAME);    // If so, return the type name token.
-	 *
-	 *	return(IDENTIFIER);        // Otherwise, return the identifier token.
-	 */
-
-	/*
-	 * In the actual implementation, it only returns IDENTIFIER.
-	 * This is just a placeholder for the actual logic.
-	 */
-	return(IDENTIFIER);
+// Entry point: Reads from standard input and starts the lexer.
+int main() {
+    yylex();  // Calls the lexical analyzer
+    return 0;
 }
