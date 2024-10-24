@@ -5,6 +5,9 @@
 
 // Counter variable used to track some metrics, such as the number of tokens encountered (if needed).
 int countn = 0;
+void preprocess_file(FILE *fp);
+/* Define a map to store macros */
+std::map<std::string, std::string> macro_table;
 
 %}
 
@@ -52,12 +55,51 @@ bool			true|false
 // identifier defines a variable name starting with a letter or underscore, followed by alphanumeric characters or underscores.
 identifier		{Letter}({Letter}|{D})*
 
-%%
-
 // Token rules section: Each rule returns a corresponding token type to the parser.
 
 // Keyword token rules: Each keyword is mapped to a specific token.
 // strcpy is used to store the matched keyword lexeme.
+%%
+^"#"[ \t]*"include"[ \t]*["<"]([^">]+)[">"] {  
+	
+    /* Extract the file name (captured between quotes) */
+    char *filename = strdup(yytext + 9); /* 9 skips #include " */
+    // printf("%s", filename);
+	char *temp = new char[strlen(filename) - 2];
+	for(int i = 1; i< strlen(filename)-1;i++){
+		temp[i-1] = filename[i];
+	}
+    // filename[strlen(filename) - 1] = '\0'; /* Remove trailing quote */
+    /* Open the file */
+	printf("%s\n", temp);
+    FILE *include_file = fopen(temp, "r");
+    if (!include_file) {
+        fprintf(stderr, "Error: Cannot open include file %s\n", temp);
+        exit(1);
+    }
+
+    // /* Switch the input stream to the new file */
+    // yyin = include_file;
+
+    /* Clean up */
+    free(filename);
+
+ }
+
+^"#"[ \t]*"define"[ \t]+([a-zA-Z_][a-zA-Z_0-9]*)[ \t]+(.*) {
+    /* Extract the macro name and replacement text */
+    std::string macro_name = std::string(yytext + 8); /* Skip #define and space */
+    size_t name_end = macro_name.find_first_of(" \t");
+    std::string macro_value = macro_name.substr(name_end + 1);
+    macro_name = macro_name.substr(0, name_end);
+
+    /* Store the macro in the table */
+    macro_table[macro_name] = macro_value;
+
+    printf("Defined macro: %s = %s\n", macro_name.c_str(), macro_value.c_str());
+}
+
+
 "auto"			{ strcpy(yylval.node.lexeme, yytext); return(AUTO); }
 "break"			{ strcpy(yylval.node.lexeme, yytext); return(BREAK); }
 "case"			{ strcpy(yylval.node.lexeme, yytext); return(CASE); }
@@ -111,45 +153,80 @@ identifier		{Letter}({Letter}|{D})*
 "volatile"		{ strcpy(yylval.node.lexeme, yytext); return(VOLATILE); }
 "WHILE"			{ strcpy(yylval.node.lexeme, yytext); return(WHILE); }
 
-// Handling variable identifiers.
 {L}({L}|{D})*		{
-     strcpy(yylval.node.lexeme, yytext);
+    // Handling variable identifiers.
+
+      std::string token = std::string(yytext);
+    if (macro_table.find(token) != macro_table.end()) {
+        // If the token is a macro, expand it
+        std::string replacement = macro_table[token];
+        
+        // Check if the replacement is a numeric constant (INT_CONST or FLOAT_CONST)
+        if (std::isdigit(replacement[0]) || replacement[0] == '-') {
+            // Determine if it's an integer or float based on the replacement value
+            if (replacement.find('.') != std::string::npos) {
+                // If the replacement is a float
+				strcpy(yylval.node.lexeme, replacement.c_str());
+                return F_CONST;  // Return as FLOAT_CONST token
+            } else {
+                // If the replacement is an integer
+				strcpy(yylval.node.lexeme, replacement.c_str());
+                return I_CONST;  // Return as INT_CONST token
+            }
+        } else {
+            // Handle identifiers and character constants
+            if (replacement.length() == 1 && std::isprint(replacement[0])) {
+				yylval.node.lexeme[0] = replacement[0];  // Set first character
+                yylval.node.lexeme[1] = '\0';
+				// strcpy(yylval.node.lexeme, replacement[0].c_str());
+                return C_CONST;  // Return as CHAR_CONST token
+            }
+							strcpy(yylval.node.lexeme, replacement.c_str());
+            // yylval.string_val = strdup(replacement.c_str());  // Duplicate string to yylval
+            return IDENTIFIER;  // Return as IDENTIFIER token
+        }
+    } else {
+        // Return as normal identifier
+        // yylval.string_val = strdup(yytext);
+		strcpy(yylval.node.lexeme, yytext);
 		return IDENTIFIER;
+    }
 }
 
-// Handling character literals.
-{char}				{ 
+{char}				{  // Handling character literals.
+
 						strcpy(yylval.node.lexeme, yytext);
 						return C_CONST;
 					}
 
-// Handling string literals.
-{string}			{ 	
+{string}			{ 	// Handling string literals.
+
 						strcpy(yylval.node.lexeme, yytext);
 						return S_CONST;
 					}
 
-// Handling boolean constants.
-{bool}				{ 	
+{bool}				{ 	// Handling boolean constants.
+
 						strcpy(yylval.node.lexeme, yytext);
 						return B_CONST;
 					}
 
-// Handling integer constants.
-{integer}			{
+{integer}			{ // Handling integer constants.
+
 						strcpy(yylval.node.lexeme, yytext);
 						return I_CONST;
 					}
 
-// Handling floating-point constants (e.g., numbers with decimal points).
-{drown}				{
+{drown}				{ // Handling floating-point constants (e.g., numbers with decimal points).
+
 						strcpy(yylval.node.lexeme, yytext);
 						return F_CONST;
 					}
 
-// Operator and punctuation rules: These return the corresponding operator or punctuation token.
 
-"..."			{ strcpy(yylval.node.lexeme, yytext); return(ELLIPSIS); }
+"..."			{ // Operator and punctuation rules: These return the corresponding operator or punctuation token.
+
+    strcpy(yylval.node.lexeme, yytext); return(ELLIPSIS); }
 ">>="			{ strcpy(yylval.node.lexeme, yytext); return(RIGHT_ASSIGN); }
 "<<="			{ strcpy(yylval.node.lexeme, yytext); return(LEFT_ASSIGN); }
 "+="			{ strcpy(yylval.node.lexeme, yytext); return(ADD_ASSIGN); }
@@ -196,11 +273,14 @@ identifier		{Letter}({Letter}|{D})*
 "="				{ strcpy(yylval.node.lexeme, yytext); return(EQUAL); }
 ","				{ strcpy(yylval.node.lexeme, yytext); return(COMMA); }
 
-// Handling whitespace (space, tab, newline). We simply skip these characters.
-[ \t\n]			{ /* Skip whitespace characters */ }
+[ \t\n]			{ 
+    // Handling whitespace (space, tab, newline). We simply skip these characters.
 
-// Handling unrecognized characters.
-.				{ printf("Unknown character: %s\n", yytext); }
+    /* Skip whitespace characters */ }
+
+.				{ // Handling unrecognized characters.
+
+    printf("Unknown character: %s\n", yytext); }
 
 %%
 
