@@ -1,5 +1,9 @@
 class ST_Entry:
-    def __init__(self, entry_type=0, value=0):  # entry type = 0 for labels, 1 for variables
+    def __init__(self, entry_type=0, value=0):  
+        """
+        LABLES : entry_type=1 
+        can extend to other sections by changing the entry_type
+        """
         self.value = value
         self.type = entry_type
 

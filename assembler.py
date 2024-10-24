@@ -147,6 +147,7 @@ class Assembler:
                 if not self.is_label(label):
                     raise ValueError(f"Invalid label: {label}")
                 
+                #as of now only storing labels, can extend to other sections by changing the entry_type
                 self.symbol_table[label] = ST_Entry(entry_type=0, value=address)
                 line = label_match.group(2).strip()  # Continue with the rest of the line
 
@@ -1030,7 +1031,7 @@ class Assembler:
                 f.write(binary_data)
 
 
-# Example usage
+
 if __name__ == "__main__":
     assembler = Assembler()
     machine_code = assembler.assemble("vmout.asm")
