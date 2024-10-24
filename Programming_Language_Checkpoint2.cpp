@@ -290,6 +290,76 @@ Demonstration: Complex Code
 
 Complex Program 1: Inverse of an n x m Matrix
 
+// Function to calculate the determinant of the matrix
+function determinant(float[][] matrix, int n): float {
+    IF (n == 1) {
+        return matrix[0][0];
+    }
+
+    float det = 0;
+    float[][] temp = allocate float[n][n];  // To store cofactors
+    int sign = 1;  // To store sign multiplier
+
+    // Iterate over the first row
+    FOR (int f = 0; f < n; f++) {
+        getCofactor(matrix, temp, 0, f, n);  // Get cofactor of matrix[0][f]
+        det += sign * matrix[0][f] * determinant(temp, n - 1);  // Add to determinant
+        sign = -sign;  // Alternate the sign for cofactors
+    }
+
+    return det;
+}
+
+// Function to get the cofactor of matrix[p][q]
+function getCofactor(float[][] matrix, float[][] temp, int p, int q, int n) {
+    int i = 0, j = 0;
+
+    // Loop through each element of the matrix
+    FOR (int row = 0; row < n; row++) {
+        FOR (int col = 0; col < n; col++) {
+            // Copy elements to temp matrix except the current row and column
+            IF (row != p && col != q) {
+                temp[i][j++] = matrix[row][col];
+                
+                // Move to the next row when the end of a row is reached
+                IF (j == n - 1) {
+                    j = 0;
+                    i++;
+                }
+            }
+        }
+    }
+}
+
+// Function to calculate adjoint of the matrix
+function adjoint(float[][] matrix, int n): float[][] {
+    IF (n == 1) {
+        float[][] adj = allocate float[1][1];
+        adj[0][0] = 1;
+        return adj;
+    }
+
+    float[][] adj = allocate float[n][n];  // To store adjoint of matrix
+    float[][] temp = allocate float[n][n];  // To store cofactors
+    int sign;
+
+    FOR (int i = 0; i < n; i++) {
+        FOR (int j = 0; j < n; j++) {
+            // Get cofactor of matrix[i][j]
+            getCofactor(matrix, temp, i, j, n);
+
+            // Sign of adjoint[j][i] positive if (i+j) is even, negative if odd
+            sign = ((i + j) % 2 == 0) ? 1 : -1;
+
+            // Transpose of cofactors is stored in adj
+            adj[j][i] = sign * determinant(temp, n - 1);
+        }
+    }
+
+    return adj;
+}
+
+// Function to calculate the inverse of the matrix
 function inverseMatrix(float[][] matrix, int n): float[][] {
     // Check if matrix is square
     IF (n != matrix[0].length) {
@@ -297,16 +367,18 @@ function inverseMatrix(float[][] matrix, int n): float[][] {
         return null;
     }
 
+    // Calculate determinant
     float det = determinant(matrix, n);
     IF (det == 0) {
         print("Matrix is singular, inverse does not exist.");
         return null;
     }
 
+    // Calculate adjoint
     float[][] adj = adjoint(matrix, n);
-    float[][] inv = allocate float[n][n];
 
-    // Calculate the inverse using adjoint and determinant
+    // Calculate inverse using adjoint and determinant
+    float[][] inv = allocate float[n][n];
     FOR (int i = 0; i < n; i++) {
         FOR (int j = 0; j < n; j++) {
             inv[i][j] = adj[i][j] / det;
@@ -316,12 +388,33 @@ function inverseMatrix(float[][] matrix, int n): float[][] {
     return inv;
 }
 
-function determinant(float[][] matrix, int n): float {
-    // Implement determinant calculation logic here
+// Helper function to display matrix
+function displayMatrix(float[][] matrix, int n) {
+    FOR (int i = 0; i < n; i++) {
+        FOR (int j = 0; j < n; j++) {
+            print(matrix[i][j] + " ");
+        }
+        print("\n");
+    }
 }
 
-function adjoint(float[][] matrix, int n): float[][] {
-    // Implement adjoint matrix logic here
+// Main function to test matrix inversion
+function main() {
+    int n = 3;
+    float[][] matrix = {
+        {1, 2, 3},
+        {0, 1, 4},
+        {5, 6, 0}
+    };
+
+    print("Original matrix:\n");
+    displayMatrix(matrix, n);
+
+    float[][] inverse = inverseMatrix(matrix, n);
+    IF (inverse != null) {
+        print("\nInverse matrix:\n");
+        displayMatrix(inverse, n);
+    }
 }
 
 
