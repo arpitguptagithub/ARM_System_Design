@@ -1045,4 +1045,4 @@ if __name__ == "__main__":
     machine_code = assembler.assemble("vmout.asm")
     print(f"Machine code: {machine_code}")
     
-    assembler.write_obj_file(machine_code, "output.obj")
+    assembler.write_obj_file(machine_code, "asmout.obj")
