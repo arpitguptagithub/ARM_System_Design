@@ -111,7 +111,24 @@ class Assembler:
                         tokens.append(part)
 
         return tokens
-
+    
+    def is_label(self, label):
+        print("check label:", label)
+        if not label:
+            return False
+       
+        # Check if the first character is a letter
+        if not label[0].isalpha():
+            print("c1 ")
+            return False
+        
+        # Check if all characters are uppercase letters, digits, or underscores
+        for char in label[1:]:
+            if not (char.isalpha() or char.isdigit() or char == '_'):
+                print("c2 ", char)
+                return False
+        
+        return True
 
     def first_pass(self, source_code):
         lines = source_code.splitlines()
@@ -126,6 +143,10 @@ class Assembler:
             label_match = re.match(r'(\w+):\s*(.*)', line)
             if label_match:
                 label = label_match.group(1)
+                label = label.strip()
+                if not self.is_label(label):
+                    raise ValueError(f"Invalid label: {label}")
+                
                 self.symbol_table[label] = ST_Entry(entry_type=0, value=address)
                 line = label_match.group(2).strip()  # Continue with the rest of the line
 
@@ -306,7 +327,7 @@ class Assembler:
         ADDS R3, R2, R2
         Encodes an ADDS operation with two registers.
         """
-        return self.add_command(tokens, instruction, setf=1)
+        return self.add_command(instruction_name ,tokens,  instruction, setf=1)
 
     
     def adc_command(self, instruction_name, tokens, instruction, setf = 0):
@@ -731,7 +752,7 @@ class Assembler:
             raise ValueError("Invalid register")
 
         # Opcode for CMP
-        opcode = '1010'  # CMP opcode in 4 bits
+        opcode = self.opcode.get("CMP")  # CMP opcode in 4 bits
 
         # Condition and flags
         condition = self.get_condition(instruction_name)
@@ -773,7 +794,7 @@ class Assembler:
             raise ValueError("Invalid register")
 
         # Opcode for TST
-        opcode = '1000'  # TST opcode in 4 bits
+        opcode = self.opcode.get("TST")  # TST opcode in 4 bits
 
         # Condition and flags
         condition = self.get_condition(instruction_name)
@@ -790,9 +811,10 @@ class Assembler:
             f"{rd:04b}"               # Rd is not used (4 bits)
             f"{rm:012b}"             # Second register (4 bits)
         )
-
+        print(f"Binary instruction: {binary_instruction}")
         # Check for 32 bits
         if len(binary_instruction) != 32:
+            print("LEN ", len(binary_instruction))
             raise ValueError(f"Binary instruction is not 32 bits: {binary_instruction}")
 
         # Convert binary instruction to hexadecimal
@@ -937,6 +959,7 @@ class Assembler:
 
         # Mask the offset to ensure it's within 24 bits
         offset &= 0xFFFFFF  # Mask to 24 bits
+        print("OFFSET ", f"{offset:024b}" )
 
         # Form the binary instruction: Condition (4 bits), Opcode (4 bits), L bit (1 bit), 24-bit offset
         binary_instruction = (
@@ -1009,9 +1032,17 @@ class Assembler:
         self.second_pass()
         return self.machine_code
 
+    def write_obj_file(self, machine_code, obj_file_path):
+        with open(obj_file_path, "wb") as f:
+             for instruction in machine_code:
+                binary_data = bytes.fromhex(instruction)
+                f.write(binary_data)
+
 
 # Example usage
 if __name__ == "__main__":
     assembler = Assembler()
     machine_code = assembler.assemble("vmout.asm")
     print(f"Machine code: {machine_code}")
+    
+    assembler.write_obj_file(machine_code, "output.obj")
