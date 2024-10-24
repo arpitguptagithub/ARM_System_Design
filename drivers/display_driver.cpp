@@ -303,7 +303,7 @@ int write_char(char c)
 
             return 0;
         }
-        else if (c == CTRL_CODE_BACKSPACE)
+        else if (c == '\b' || c==CTRL_CODE_BACKSPACE)
         {
             if (COLUMN == 0)
             {
@@ -811,32 +811,26 @@ void save_memory(char* filename, int len)
     fclose(file);
 }
 
-int main()
-{   minit();
-    // init_memory();
-    // char* mem_file = "some.txt";
-    // save_memory(mem_file, sizeof(mem_file));
-    // return 0;
-    // //std::cout<<font_map[0][0]<<"\n"<<(int)font_map[0][0];
+// int main()
+// {   minit();
+//     // init_memory();
+//     // char* mem_file = "some.txt";
+//     // save_memory(mem_file, sizeof(mem_file));
+//     // return 0;
+//     // //std::cout<<font_map[0][0]<<"\n"<<(int)font_map[0][0];
 
-    // write_face(font_map);
+//     // write_face(font_map);
 
-    char f[]="AH||ola \nA jkbjkb";
-    // LINE=8;
-    // COLUMN=5;
-    write_string_at_col("A",1,8,0);
-    write_string_at_col("a",1,8,0);
-    write_string_at_col("b",1,16,0);
-    write_string_at_col("c",1,24,0);
+//     char f[]="AH||ola \nA jkbjkb";
+//     // LINE=8;
+//     // COLUMN=5;
+//     LINE=0;
+//     COLUMN=1;
+//     for(int i=0;i<16;i++){
 
-    display_up();
-    // LINE=0;
-    // COLUMN=1;
-    // for(int i=0;i<16;i++){
-
-    //     write_char_at(f[i],LINE,COLUMN);
-    // }
-    // write_char(keyboard_get_input());
+//         write_char_at(f[i],LINE,COLUMN);
+//     }
+//     // write_char(keyboard_get_input());
 
 
-}
+// }

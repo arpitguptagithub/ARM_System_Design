@@ -11,7 +11,7 @@
 #include "../core/memory.cpp"
 
 #define INT_END_POINT 0x2E
-#define TEST_INPUT_FILE "keyboard_input.txt" // Define the test input file
+#define TEST_INPUT_FILE "../keyboard_input.txt" // Define the test input file
 
 /**
  * \brief Initializes keyboard.
