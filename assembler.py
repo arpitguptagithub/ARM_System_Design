@@ -221,12 +221,17 @@ class Assembler:
         if instruction_name[0] == 'S':
             return '1'
         
-    def get_imm(self, immediate_str):
-        if immediate_str.startswith("0x"):
-            immediate = int(immediate_str, 16)
-        else:
-            immediate = int(immediate_str)
-        return immediate
+        def get_imm(self, immediate_str):
+            if immediate_str.startswith("0x"):
+                # Hexadecimal input
+                immediate = int(immediate_str, 16)
+            elif immediate_str.startswith("0b"):
+                # Binary input
+                immediate = int(immediate_str, 2)
+            else:
+                # Decimal input
+                immediate = int(immediate_str)
+            return immediate
     
 
     def mov_command(self,instruction_name,  tokens, instruction):
