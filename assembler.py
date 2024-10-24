@@ -220,6 +220,13 @@ class Assembler:
             return '0'
         if instruction_name[0] == 'S':
             return '1'
+        
+    def get_imm(self, immediate_str):
+        if immediate_str.startswith("0x"):
+            immediate = int(immediate_str, 16)
+        else:
+            immediate = int(immediate_str)
+        return immediate
     
 
     def mov_command(self,instruction_name,  tokens, instruction):
@@ -235,7 +242,7 @@ class Assembler:
 
         # Handle immediate value, expecting it to be in the format #value
         immediate_str = tokens[1].strip('#')
-        immediate = int(immediate_str)
+        immediate = self.get_imm(immediate_str)
         immediate_encoded = self.encode_immediate(immediate_value=immediate)
 
         # Opcode for MOV
@@ -285,7 +292,8 @@ class Assembler:
         if None in (rd, rn, rm):
             print("RM IS NONE")
             is_imm = True
-            offset = int(tokens[2].split('#')[1]) if '#' in tokens[2] else 0
+            offset = self.get_imm(tokens[2].split('#')[1]) if '#' in tokens[2] else 0
+            print("OFFSET ADD ", offset)
             
         print(f"TOKENS: {tokens}")
         print(f"RD: {rd}, RN: {rn}, RM: {rm}, offset: {offset}")
@@ -397,7 +405,7 @@ class Assembler:
 
         shift_type_str = tokens[3].upper() 
         shift_amount_str = tokens[4].strip('#')  
-        shift_amount = int(shift_amount_str)  
+        shift_amount = self.get_imm(shift_amount_str)  
         print("SHIFT AMT ", shift_amount)
         shift_type = self.shift_codes.get(shift_type_str)
         if shift_type is None:
@@ -463,7 +471,7 @@ class Assembler:
 
         shift_type_str = tokens[3].upper() 
         shift_amount_str = tokens[4].strip('#')  
-        shift_amount = int(shift_amount_str)  
+        shift_amount = self.get_imm(shift_amount_str)  
         print("SHIFT AMT ", shift_amount)
         shift_type = self.shift_codes.get(shift_type_str)
         if shift_type is None:
@@ -528,7 +536,7 @@ class Assembler:
 
         shift_type_str = tokens[3].upper() 
         shift_amount_str = tokens[4].strip('#')  
-        shift_amount = int(shift_amount_str)  
+        shift_amount = self.get_imm(shift_amount_str)  
 
         shift_type = self.shift_codes.get(shift_type_str)
         if shift_type is None:
@@ -872,8 +880,10 @@ class Assembler:
         """
         rt = self.regcode.get(tokens[0].upper(), None)  # Register to load (Rt)
         rn = self.regcode.get(tokens[1].upper().split(',')[0], None)  # Base register (Rn)
-        offset = int(tokens[1].split('#')[1]) if '#' in tokens[1] else 0  # Immediate offset
-
+        offset = (tokens[2].split('#')[1]) if '#' in tokens[2] else "0"  # Immediate offset
+        print("TOKEN1 ", tokens[1])
+        print("BEFORE OFFSET ", offset)
+        offset = self.get_imm(offset)
         print(f"TOKENS: {tokens}")
         print(f"RT: {rt}, RN: {rn}, OFFSET: {offset}")
 
@@ -890,7 +900,7 @@ class Assembler:
 
         # Immediate value must be in the range of 12 bits
         imm12 = f"{offset:012b}"  # Convert offset to 12 bits
-
+        print("IMM ", imm12)
         set_flags = '1'
         
         # Final binary instruction
@@ -937,7 +947,7 @@ class Assembler:
         if tokens[0].startswith('#'):
             imm_bit = '1'
             # Convert the immediate value to a signed 24-bit value (assuming it's in bytes)
-            offset = int(tokens[0][1:])  # Remove the '#' and convert to integer
+            offset = self.get_imm(tokens[0][1:])  # Remove the '#' and convert to integer
         else:
             # If it's a label, calculate the offset (assuming label_address_map has the address)
             label = tokens[0]
