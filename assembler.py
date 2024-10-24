@@ -15,6 +15,7 @@ class Assembler:
             "EOR" : "0001",
             "CMP" : "1010",
             "TST" : "1000",
+            "AND" : "0000",
             "STR" : "0100",
         }
         self.regcode = {  
@@ -183,7 +184,11 @@ class Assembler:
         print("CONDIT STR ", condition_str)
         if condition_str == "":
             return self.condition_codes["AL"]
-        return self.condition_codes[condition_str]
+        
+        try:
+            return self.condition_codes[condition_str]
+        except KeyError:
+            return "1110"  # Default to "1101" in case of an error
     
 
     def mov_command(self,instruction_name,  tokens, instruction):
@@ -261,7 +266,6 @@ class Assembler:
         # Opcode for ADD
         opcode = self.opcode.get("ADD")
         print(f"Opcode for ADD: {opcode}")
-        opcode = '0100'
         # Condition and flags
         condition = self.get_condition(instruction_name)
         class_type = '00'   # Data processing
@@ -305,7 +309,7 @@ class Assembler:
         return self.add_command(tokens, instruction, setf=1)
 
     
-    def adc_command(self, instruction_name, tokens, instruction):
+    def adc_command(self, instruction_name, tokens, instruction, setf = 0):
         """
         ADC R3, R2, R2
         Encodes an ADC operation by extracting the destination register and the two source registers.
@@ -330,27 +334,34 @@ class Assembler:
         condition = self.get_condition(instruction_name)
         immediate_flag = '0'     # Not using an immediate value
         set_flags = '0'          # Not updating flags
+        if setf != 0:
+            set_flags = '1'
         class_type = '00'        # Data processing
 
         # Final binary instruction
         binary_instruction = (
             f"{condition}"          # Condition (4 bits)
+            f"{class_type}"
             f"{immediate_flag}"     # Immediate flag (1 bit)
-            f"{opcode:04b}"        # Opcode (6 bits)
+            f"{opcode}"        # Opcode (6 bits)
             f"{set_flags}"          # Set flags (1 bit)
             f"{rn:04b}"             # First source register (4 bits)
             f"{rd:04b}"             # Destination register (4 bits)
             f"{rm:012b}"            # Second operand (12 bits) - need to ensure it's correctly formatted
         )
-
+        print(f"Binary instruction: {binary_instruction}")
         # Check the length of the final binary instruction
         if len(binary_instruction) != 32:
+            print("LEN ", len(binary_instruction))
             raise ValueError(f"Binary instruction is not 32 bits: {binary_instruction}")
 
         # Convert binary instruction to hexadecimal
         machine_code = f"{int(binary_instruction, 2):08X}"  # Convert binary to hex
 
         return machine_code
+    
+    def adcs_command(self, instruction_name, tokens, instruction):
+        return self.adcs_command(instruction_name, tokens, instruction, 1)
 
     def sub_command(self, instruction_name, tokens, instruction):
         """
@@ -370,7 +381,7 @@ class Assembler:
         shift_type_str = tokens[3].upper() 
         shift_amount_str = tokens[4].strip('#')  
         shift_amount = int(shift_amount_str)  
-
+        print("SHIFT AMT ", shift_amount)
         shift_type = self.shift_codes.get(shift_type_str)
         if shift_type is None:
             raise ValueError(f"Invalid shift type: {shift_type_str}")
@@ -388,26 +399,29 @@ class Assembler:
         set_flags = '0'     # Not updating flags
 
         # Shift amount (6 bits) and encode as binary
-        shift_amount_binary = f"{shift_amount:06b}"  # 6 bits for shift amount
-
+        shift_amount_binary = f"{shift_amount:05b}"  # 6 bits for shift amount
+        print("SABIN ", shift_amount_binary)
         # Final binary instruction
+        print("SHFT TYPE ", shift_type)
         binary_instruction = (
             f"{condition}"          # Condition (4 bits)
+            f"{class_type}"
             f"{immediate_flag}"     # Immediate flag (1 bit)
-            f"{opcode:04b}"        # Opcode (4 bits, modify as per your opcode bit length)
+            f"{opcode}"        # Opcode (4 bits, modify as per your opcode bit length)
             f"{set_flags}"          # Set flags (1 bit)
             f"{rn:04b}"             # First source register (4 bits)
             f"{rd:04b}"             # Destination register (4 bits)
-            f"{rm:04b}"             # Second source register (4 bits)
-            f"{shift_type}"         # Shift type (2 bits)
             f"{shift_amount_binary}" # Shift amount (6 bits)
+            f"{shift_type:02b}"         # Shift type (2 bits)
+            f"0"
+            f"{rm:04b}"             # Second source register (4 bits)
         )
 
         print(f"Binary instruction: {binary_instruction}")
         
         # Check for 32 bits
         if len(binary_instruction) != 32:
-            print("LEN: ", len)
+            print("LEN: ", len(binary_instruction))
             raise ValueError(f"Binary instruction is not 32 bits: {binary_instruction}")
 
         # Convert binary instruction to hexadecimal
@@ -417,7 +431,7 @@ class Assembler:
 
     def sbc_command(self, instruction_name, tokens, instruction):
         """
-        Converts SUB R5, R4, R4, LSL #2 to binary.
+        Converts SBC R5, R4, R4, LSL #2 to binary.
         """
         # Get register codes for destination and source registers
         rd = self.regcode.get(tokens[0].upper(), None)  # Destination register (R5)
@@ -433,7 +447,7 @@ class Assembler:
         shift_type_str = tokens[3].upper() 
         shift_amount_str = tokens[4].strip('#')  
         shift_amount = int(shift_amount_str)  
-
+        print("SHIFT AMT ", shift_amount)
         shift_type = self.shift_codes.get(shift_type_str)
         if shift_type is None:
             raise ValueError(f"Invalid shift type: {shift_type_str}")
@@ -451,27 +465,30 @@ class Assembler:
         set_flags = '0'     # Not updating flags
 
         # Shift amount (6 bits) and encode as binary
-        shift_amount_binary = f"{shift_amount:06b}"  # 6 bits for shift amount
-
+        shift_amount_binary = f"{shift_amount:05b}"  # 6 bits for shift amount
+        print("SABIN ", shift_amount_binary)
         # Final binary instruction
+        print("SHFT TYPE ", shift_type)
         binary_instruction = (
             f"{condition}"          # Condition (4 bits)
+            f"{class_type}"
             f"{immediate_flag}"     # Immediate flag (1 bit)
-            f"{opcode:04b}"        # Opcode (4 bits, modify as per your opcode bit length)
+            f"{opcode}"        # Opcode (4 bits, modify as per your opcode bit length)
             f"{set_flags}"          # Set flags (1 bit)
             f"{rn:04b}"             # First source register (4 bits)
             f"{rd:04b}"             # Destination register (4 bits)
-            f"{rm:04b}"             # Second source register (4 bits)
-            f"{shift_type}"         # Shift type (2 bits)
             f"{shift_amount_binary}" # Shift amount (6 bits)
+            f"{shift_type:02b}"         # Shift type (2 bits)
+            f"0"
+            f"{rm:04b}"             # Second source register (4 bits)
         )
+
         print(f"Binary instruction: {binary_instruction}")
         
         # Check for 32 bits
         if len(binary_instruction) != 32:
-            print("LEN: ", len)
+            print("LEN: ", len(binary_instruction))
             raise ValueError(f"Binary instruction is not 32 bits: {binary_instruction}")
-
 
         # Convert binary instruction to hexadecimal
         machine_code = f"{int(binary_instruction, 2):08X}"  # Convert binary to hex
@@ -504,7 +521,7 @@ class Assembler:
 
         # Opcode for SUB
         opcode = self.opcode.get("ORR")
-        print(f"Opcode for SUB: {opcode}")
+        print(f"Opcode for ORR: {opcode}")
 
         # Condition and flags
         condition = self.get_condition(instruction_name)
@@ -513,27 +530,28 @@ class Assembler:
         set_flags = '0'     # Not updating flags
 
         # Shift amount (6 bits) and encode as binary
-        shift_amount_binary = f"{shift_amount:06b}"  # 6 bits for shift amount
+        shift_amount_binary = f"{shift_amount:05b}"  # 5 bits for shift amount
         
-        opcode_and_before = "011100"
         # Final binary instruction  
         binary_instruction = (
             f"{condition}"          # Condition (4 bits)
+            f"{class_type}"
             f"{immediate_flag}"     # Immediate flag (1 bit)
-            f"{opcode_and_before}"        # Opcode (4 bits)
+            f"{opcode}"        # Opcode (4 bits)
             f"{set_flags}"          # Set flags (1 bit)
             f"{rn:04b}"             # First source register (4 bits)
             f"{rd:04b}"             # Destination register (4 bits)
-            f"{rm:04b}"             # Second source register (4 bits)
+            f"{shift_amount_binary}" # Shift amount (5 bits)
             f"{shift_type:02b}"     # Shift type (2 bits) - convert to binary string
-            f"{shift_amount_binary}" # Shift amount (6 bits)
+            f"0"
+            f"{rm:04b}"             # Second source register (4 bits)
         )
+        print(f"Binary instruction: {binary_instruction}")
         # Check for 32 bits
         if len(binary_instruction) != 32:
             print("LEN ", len(binary_instruction))
             raise ValueError(f"Binary instruction is not 32 bits: {binary_instruction}")
 
-        print(f"Binary instruction: {binary_instruction}")
 
         # Convert binary instruction to hexadecimal
         machine_code = f"{int(binary_instruction, 2):08X}"  # Convert binary to hex
@@ -558,24 +576,26 @@ class Assembler:
 
         # Opcode for ADC
         opcode = self.opcode.get("AND")
-        print(f"Opcode for ADC: {opcode}")
+        print(f"Opcode for AND: {opcode}")
 
         # Condition and flags
         condition = self.get_condition(instruction_name)
-        immediate_flag = 0     # Not using an immediate value
+        immediate_flag = '0'    # Not using an immediate value
         set_flags = '0'          # Not updating flags
         class_type = '00'        # Data processing
 
         # Final binary instruction
         binary_instruction = (
             f"{condition}"          # Condition (4 bits)
-            f"{immediate_flag:03b}"     # Immediate flag (1 bit)
-            f"{opcode:04b}"        # Opcode (6 bits)
+            f"{class_type}"
+            f"{immediate_flag}"      # Immediate flag (1 bit)
+            f"{opcode}"        # Opcode (6 bits)
             f"{set_flags}"          # Set flags (1 bit)
             f"{rn:04b}"             # First source register (4 bits)
             f"{rd:04b}"             # Destination register (4 bits)
             f"{rm:012b}"            # Second operand (12 bits) - need to ensure it's correctly formatted
         )
+        print(f"Binary instruction: {binary_instruction}")
 
         # Check the length of the final binary instruction
         if len(binary_instruction) != 32:
@@ -609,14 +629,15 @@ class Assembler:
         opcode = "1111"
         # Condition and flags
         condition = self.get_condition(instruction_name)
-        immediate_flag = 0     # Not using an immediate value
+        immediate_flag = '0'     # Not using an immediate value
         set_flags = '0'          # Not updating flags
         class_type = '00'        # Data processing
 
         # Final binary instruction
         binary_instruction = (
             f"{condition}"          # Condition (4 bits)
-            f"{immediate_flag:03b}"     # Immediate flag (1 bit)
+            f"{class_type}"     # Immediate flag (1 bit)
+            f"{immediate_flag}"
             f"{opcode}"        # Opcode (6 bits)  #opcode givin in arm website as 1111
             f"{set_flags}"          # Set flags (1 bit)
             f"{rn:04b}"             # First source register (4 bits)
@@ -636,6 +657,8 @@ class Assembler:
         # print("BARRY: ")
         # for x in barray:
         #     print(x + " ,")
+        print(f"Binary instruction: {binary_instruction}")
+        
         # Check the length of the final binary instruction
         if len(binary_instruction) != 32:
             print("LEN ", len(binary_instruction))
@@ -662,25 +685,26 @@ class Assembler:
             raise ValueError("Invalid register")
 
         # Opcode for ADC
-        opcode = self.opcode.get("MVN")
-        print(f"Opcode for ADC: {opcode}")
-        opcode = "0001" #GOT OPCODE FROM ARM WEBSITE
+        opcode = self.opcode.get("EOR")
+        print(f"Opcode for EOR: {opcode}")
         # Condition and flags
         condition = self.get_condition(instruction_name)
-        immediate_flag = 0     # Not using an immediate value
+        immediate_flag = '0'     # Not using an immediate value
         set_flags = '0'          # Not updating flags
         class_type = '00'        # Data processing
 
         # Final binary instruction
         binary_instruction = (
             f"{condition}"          # Condition (4 bits)
-            f"{immediate_flag:03b}"     # Immediate flag (1 bit)
+            f"{class_type}"
+            f"{immediate_flag}"
             f"{opcode}"        # Opcode (6 bits)  #opcode givin in arm website as 1111
             f"{set_flags}"          # Set flags (1 bit)
             f"{rn:04b}"             # First source register (4 bits)
             f"{rd:04b}"             # Destination register (4 bits)
             f"{rm:012b}"            # Second operand (12 bits) - need to ensure it's correctly formatted
         )
+        print(f"Binary instruction: {binary_instruction}")
     
         if len(binary_instruction) != 32:
             print("LEN ", len(binary_instruction))
@@ -944,12 +968,14 @@ class Assembler:
 
         if "MOV" in instruction_name:
             return self.mov_command(instruction_name, tokens[1:], instruction)
-        elif "ADD" in instruction_name:
-            return self.add_command(instruction_name, tokens[1:], instruction)
         elif "ADDS" in instruction_name:
             return self.adds_command(instruction_name, tokens[1:], instruction)
+        elif "ADD" in instruction_name:
+            return self.add_command(instruction_name, tokens[1:], instruction)
         elif "LDR" in instruction_name:
             return self.ldr_command(instruction_name, tokens[1:], instruction)
+        elif "ADCS" in instruction_name:
+            return self.adc_command(instruction_name, tokens[1:], instruction)
         elif "ADC" in instruction_name:
             return self.adc_command(instruction_name, tokens[1:], instruction)
         elif "SUB" in instruction_name:
@@ -985,7 +1011,7 @@ class Assembler:
 if __name__ == "__main__":
     source_code = """
     start:
-   MOV    R0 ,#20 
+   ADCS    R4 ,R0,R0 
     """
     
     assembler = Assembler()
