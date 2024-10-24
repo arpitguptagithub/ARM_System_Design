@@ -61,7 +61,7 @@ class Assembler:
         'LE': '1101',  # Signed Less than or Equal
         'AL': '1110',  # Always
         'NV': '1111',  # Unpredictable
-        '' : '1101'  # if something else is there instead of condition (ADDS)
+        '' : '1110'  # if something else is there instead of condition (ADDS)
     }
         self.symbol_table = {}
         self.instructions = []
@@ -203,13 +203,22 @@ class Assembler:
     def get_condition(self, instruction_name):
         condition_str = instruction_name[3:].upper()
         print("CONDIT STR ", condition_str)
+        
         if condition_str == "":
             return self.condition_codes["AL"]
-        
+        if condition_str[0] == 'S':
+            condition_str = condition_str[1:]
         try:
             return self.condition_codes[condition_str]
         except KeyError:
             return "1110"  # Default to "1101" in case of an error
+    
+    def get_set_flag(self, instruction_name):
+        instruction_name = instruction_name[3:].upper()
+        if instruction_name == "":
+            return '0'
+        if instruction_name[0] == 'S':
+            return '1'
     
 
     def mov_command(self,instruction_name,  tokens, instruction):
@@ -235,7 +244,7 @@ class Assembler:
         condition = self.get_condition(instruction_name)
         class_type = '00'   # Data processing
         immediate_flag = '1'  # Immediate flag
-        set_flags = '0'     # Not updating flags
+        set_flags = self.get_set_flag(instruction_name)     # Not updating flags
 
         # Final binary instruction
         binary_instruction = (
@@ -294,10 +303,8 @@ class Assembler:
         if is_imm:
             immediate_flag_extend = '001'
             rm = offset
-        set_flags = '0'     # Not updating flags
-        if setf:
-            set_flags = '1';
-
+        set_flags = self.get_set_flag(instruction_name)   
+        print("S: ", set_flags)
         # Final binary instruction
         binary_instruction = (
             f"{condition}"          # Condition (4 bits)
@@ -320,14 +327,6 @@ class Assembler:
         print(f"Machine code: {machine_code}")
 
         return machine_code
-
-
-    def adds_command(self,instruction_name,  tokens, instruction):
-        """
-        ADDS R3, R2, R2
-        Encodes an ADDS operation with two registers.
-        """
-        return self.add_command(instruction_name ,tokens,  instruction, setf=1)
 
     
     def adc_command(self, instruction_name, tokens, instruction, setf = 0):
@@ -354,11 +353,9 @@ class Assembler:
         # Condition and flags
         condition = self.get_condition(instruction_name)
         immediate_flag = '0'     # Not using an immediate value
-        set_flags = '0'          # Not updating flags
-        if setf != 0:
-            set_flags = '1'
-        class_type = '00'        # Data processing
-
+        set_flags = self.get_set_flag(instruction_name)   
+        class_type = '00'  
+        ['E3A00014', 'E0823002', 'D0923002', 'E1E09006', 'E024A005', 'E0A04000']
         # Final binary instruction
         binary_instruction = (
             f"{condition}"          # Condition (4 bits)
@@ -381,8 +378,6 @@ class Assembler:
 
         return machine_code
     
-    def adcs_command(self, instruction_name, tokens, instruction):
-        return self.adcs_command(instruction_name, tokens, instruction, 1)
 
     def sub_command(self, instruction_name, tokens, instruction):
         """
@@ -417,7 +412,7 @@ class Assembler:
         condition = self.get_condition(instruction_name)
         immediate_flag = '0'  # Not using an immediate value
         class_type = '00'   # Data processing
-        set_flags = '0'     # Not updating flags
+        set_flags = self.get_set_flag(instruction_name)   
 
         # Shift amount (6 bits) and encode as binary
         shift_amount_binary = f"{shift_amount:05b}"  # 6 bits for shift amount
@@ -483,7 +478,7 @@ class Assembler:
         condition = self.get_condition(instruction_name)
         immediate_flag = '0'  # Not using an immediate value
         class_type = '00'   # Data processing
-        set_flags = '0'     # Not updating flags
+        set_flags = self.get_set_flag(instruction_name)   
 
         # Shift amount (6 bits) and encode as binary
         shift_amount_binary = f"{shift_amount:05b}"  # 6 bits for shift amount
@@ -548,7 +543,7 @@ class Assembler:
         condition = self.get_condition(instruction_name)
         immediate_flag = '0'  # Not using an immediate value
         class_type = '00'   # Data processing
-        set_flags = '0'     # Not updating flags
+        set_flags = self.get_set_flag(instruction_name)   
 
         # Shift amount (6 bits) and encode as binary
         shift_amount_binary = f"{shift_amount:05b}"  # 5 bits for shift amount
@@ -602,7 +597,7 @@ class Assembler:
         # Condition and flags
         condition = self.get_condition(instruction_name)
         immediate_flag = '0'    # Not using an immediate value
-        set_flags = '0'          # Not updating flags
+        set_flags = self.get_set_flag(instruction_name)   
         class_type = '00'        # Data processing
 
         # Final binary instruction
@@ -651,7 +646,7 @@ class Assembler:
         # Condition and flags
         condition = self.get_condition(instruction_name)
         immediate_flag = '0'     # Not using an immediate value
-        set_flags = '0'          # Not updating flags
+        set_flags = self.get_set_flag(instruction_name)   
         class_type = '00'        # Data processing
 
         # Final binary instruction
@@ -711,7 +706,7 @@ class Assembler:
         # Condition and flags
         condition = self.get_condition(instruction_name)
         immediate_flag = '0'     # Not using an immediate value
-        set_flags = '0'          # Not updating flags
+        set_flags = self.get_set_flag(instruction_name)   
         class_type = '00'        # Data processing
 
         # Final binary instruction
@@ -991,14 +986,10 @@ class Assembler:
 
         if "MOV" in instruction_name:
             return self.mov_command(instruction_name, tokens[1:], instruction)
-        elif "ADDS" in instruction_name:
-            return self.adds_command(instruction_name, tokens[1:], instruction)
         elif "ADD" in instruction_name:
             return self.add_command(instruction_name, tokens[1:], instruction)
         elif "LDR" in instruction_name:
             return self.ldr_command(instruction_name, tokens[1:], instruction)
-        elif "ADCS" in instruction_name:
-            return self.adc_command(instruction_name, tokens[1:], instruction)
         elif "ADC" in instruction_name:
             return self.adc_command(instruction_name, tokens[1:], instruction)
         elif "SUB" in instruction_name:
