@@ -1,0 +1,13 @@
+function sumArray(int[] arr, int size): int {
+    int sum = 0;
+    FOR (int i = 0; i < size; i++) {
+        sum += arr[i];
+    }
+    return sum;
+}
+
+function main() {
+    int[] numbers = {1, 2, 3, 4, 5};
+    int total = sumArray(numbers, 5);
+    print("Total sum: " + total);
+}

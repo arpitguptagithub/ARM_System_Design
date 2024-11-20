@@ -1,0 +1,27 @@
+function fibonacci(Int n) {
+    IF (n <= 0) {
+        print("Please enter a positive number.");
+        RETURN;
+    }
+
+    Int a = 0;
+    Int b = 1;
+    print("Fibonacci Series: ");
+    print(a + " ");
+    print(b + " ");
+
+    FOR (Int i = 2; i < n; i++) {
+        Int next = a + b;
+        print(next + " ");
+        a = b;
+        b = next;
+    }
+
+    RETURN;
+}
+
+function  main() {
+    Int terms = 10; // Number of terms in the Fibonacci series
+    fibonacci(terms); // Call the fibonacci function
+    RETURN 0;
+}

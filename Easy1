@@ -1,0 +1,8 @@
+function add(int a, int b): int {
+    return a + b;
+}
+
+function main() {
+    int result = add(5, 7);
+    print("Result: " + result);
+}

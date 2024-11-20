@@ -1,0 +1,15 @@
+function  factorial(Int n) {
+    IF (n == 0 OR n == 1) {
+        RETURN 1;
+    } ELSE {
+        RETURN n * factorial(n - 1);
+    }
+}
+
+function  main() {
+    Int number = 5;
+    Int result = factorial(number);
+
+    print("The factorial of " + number + " is: " + result);
+    RETURN 0;
+}
