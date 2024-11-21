@@ -1,0 +1,139 @@
+#define Key_Buffer 250000
+#define Display 250001
+#define DisplaySize 19200
+
+class Memory {
+    // Constants and fields
+    static const HEAP_SIZE = 16384;
+    static const FREE_LIST_SIZE = 2;
+    
+    static field Array memory[HEAP_SIZE];
+    static field Array freeList[FREE_LIST_SIZE];
+    static field int heapBottom;
+    static field int heapBase;
+    static const LENGTH = 0;
+    static const NEXT = 1;
+    static const ALLOC_LENGTH = 2;
+
+    // Initialization method
+    static method init() {
+        heapBase = HEAP_SIZE;
+        heapBottom = 2048;
+        memset(memory, 0, HEAP_SIZE);  // Clear memory
+
+        freeList[LENGTH] = heapBase - heapBottom;
+        freeList[NEXT] = -1;  // End of free list
+    }
+
+    // Method to peek memory at a given address
+    static method peek(address: int) -> int {
+        return memory[address];
+    }
+
+    // Method to poke memory with a value at a given address
+    static method poke(address: int, value: int) {
+        memory[address] = value;
+    }
+
+    // Method to find the best fit block for allocation
+    static method bestFit(size: int) -> Array {
+        field Array curBlock = freeList;
+        field Array bestBlock = null;
+        field int bestSize = heapBase - heapBottom;
+
+        while (curBlock != null) {
+            field int curSize = curBlock[LENGTH] - 1;
+            if (curSize >= size && curSize < bestSize) {
+                bestBlock = curBlock;
+                bestSize = curSize;
+            }
+
+            curBlock = (curBlock[NEXT] == -1) ? null : memory[curBlock[NEXT]];
+        }
+
+        return bestBlock;
+    }
+
+    // Method to allocate memory
+    static method alloc(size: int) -> int {
+        field Array foundBlock = bestFit(size);
+        if (foundBlock == null) {
+            return -1;  // Allocation failed
+        }
+
+        field int result = foundBlock - memory - 1;
+
+        if (foundBlock[LENGTH] > size + 3) {
+            field Array nextBlock = foundBlock - size - 1;
+            nextBlock[NEXT] = foundBlock[NEXT];
+            nextBlock[LENGTH] = foundBlock[LENGTH] - size - 1;
+            foundBlock[ALLOC_LENGTH] = size + 1;
+            freeList[NEXT] = nextBlock - memory;
+        } else {
+            foundBlock[ALLOC_LENGTH] = foundBlock[LENGTH];
+            freeList[NEXT] = foundBlock[NEXT];
+        }
+
+        return result;
+    }
+
+    // Method to deallocate memory
+    static method deAlloc(object: int) {
+        field int size = memory[object - 1];
+        object++; 
+        field Array preBlock = findPreFree(object);
+
+        if (preBlock == null) {
+            memory[object - 1] = size;
+            memory[object] = freeList[NEXT];
+            freeList[NEXT] = object;
+        } else {
+            if (preBlock - preBlock[LENGTH] == object) {
+                preBlock[LENGTH] += size;
+            } else {
+                memory[object - 1] = size;
+                memory[object] = preBlock[NEXT];
+                preBlock[NEXT] = object;
+            }
+        }
+
+        if (object - memory[object - 1] == memory[object]) {
+            field Array nextBlock = memory[memory[object]];
+            memory[object - 1] += nextBlock[LENGTH];
+            memory[object] = nextBlock[NEXT];
+        }
+    }
+
+    // Helper method to find the previous free block
+    static method findPreFree(object: int) -> Array {
+        if (freeList[NEXT] < object) {
+            return null;
+        }
+
+        field Array preBlock = freeList;
+        while (preBlock[NEXT] != -1 && preBlock[NEXT] < object) {
+            preBlock = memory[preBlock[NEXT]];
+        }
+
+        return preBlock;
+    }
+
+    // Method to write memory (calls OS level function)
+    static method write_mem(address: int, value: int) {
+        os_write_mem(address, value);
+    }
+
+    // Method to read a single word from memory
+    static method read_mem(address: int) -> int {
+        return os_read_mem(address);
+    }
+
+    // Method to read multiple words from memory into an array
+    static method read_mem(address: int, size: int) -> Array {
+        field Array result = new Array[size];
+        for (field int i = 0; i < size; i++) {
+            result[i] = memory[address + i];
+        }
+        return result;
+    }
+}
