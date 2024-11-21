@@ -1,0 +1,4 @@
+class terminal{
+    os.init();
+    
+}
