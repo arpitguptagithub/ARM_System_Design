@@ -1,8 +1,11 @@
-function add(int a, int b): int {
-    return a + b;
+Int add(Int a, Int b) {
+    RETURN a + b;
 }
 
-function main() {
-    int result = add(5, 7);
-    print("Result: " + result);
+Int main() {
+    Int result = add(5, 7);
+    print_String("Result: ", 8);
+    print_int(result);
+    print_String("\n", 1);
+    RETURN 0;
 }
