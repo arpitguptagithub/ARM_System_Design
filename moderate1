@@ -1,4 +1,15 @@
-void selectionSort(int arr[], int n) {
+void main() {
+    int arr[5] = {64, 25, 12, 22, 11};
+    int n = 5;
+
+    // Display the original array
+    FOR (int i = 0; i < n; i++) {
+        print_int(arr[i]);
+        print_String(" ", 1);
+    }
+    print_String("\n", 1);
+
+    // Perform selection sort
     FOR (int i = 0; i < n - 1; i++) {
         // Find the minimum element in the unsorted portion
         int minIndex = i;
@@ -15,26 +26,11 @@ void selectionSort(int arr[], int n) {
             arr[minIndex] = temp;
         }
     }
-}
 
-void displayArray(int arr[], int n) {
+    // Display the sorted array
     FOR (int i = 0; i < n; i++) {
         print_int(arr[i]);
         print_String(" ", 1);
     }
     print_String("\n", 1);
-}
-
-void main() {
-    int arr[5] = {64, 25, 12, 22, 11};
-    int n = 5;
-
-    //print_String("Original array:\n", 17);
-    displayArray(arr, n);
-
-    // Perform selection sort
-    selectionSort(arr, n);
-
-    //print_String("Sorted array:\n", 15);
-    displayArray(arr, n);
 }
