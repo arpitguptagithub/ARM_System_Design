@@ -1,85 +1,328 @@
-// Import required libraries
-include "utils.h";
-include "font_new.h";
+#include "utils.h"
+/**
+ * Memory size is 200kB
+ *
+ * 1024 X 800 bits
+ *
+ * 80 (CHARS) X 60
+ *
+ * 80 characters row wise
+ * 60 characters column wise
+ *
+ * IO_DISPLAY_START = 0
+ * display_start = 0
+ * IO_DISPLAY_SIZE = 38400 lines (size of display io in bits map divided by 8)
+ * display_end = 38400
+ * keyboard_start = 38401
+ *
+ * 80 X 60 X 8 bits = 38400 bits
+ *
+ * Memory size: 200 kB
+ *
+ *  display => 38kB
+ *  fontmap => 2kB
+ *  temp    => 10kB
+ *
+ * Fontmap:
+ *  128 -> 1kilo byte
+ *  256 -> 2kilo bytes
+ *
+ *  presently we have support for 128 ascii codes, but we have reserved other 128 for future purpose.
+ *
+ */
 
-// Constants and configurations
-const ROW_CHAR_SIZE = 40;
-const COLUMN_CHAR_SIZE = 30;
-const SCREEN_LOCK = 0;
-const IO_DISPLAY_START = 0;
-const SIZE = 2400;
+// #include "../core/memory.cpp"
+// #include "OS_memory.h"
+// #include "Keyboard_ascii_input.cpp"
+#include "font_new.h"
+// #include<iostream>
+// #include <fstream>//
+// #include <bitset>//
+// #include <vector>//
 
-// Global variables
-var max_com_len = 10;   // Maximum command length
-var LINE = 0;           // Current line (ROW)
-var COLUMN = 0;         // Current column
-var focus_mode = 0;
-var focus_mode_col = 0;
-var display = new Array(SIZE).fill(0);
+DEFINE ROW_CHAR_SIZE = 64;
+DEFINE COLUMN_CHAR_SIZE = 37;
+DEFINE SCREEN_LOCK = 0;
+DEFINE IO_DISPLAY_START = 0;
+DEFINE SIZE = 4800;
 
-// Function to get ASCII value of a character
-function getAsciiValue(c) {
-    if (c >= 0 && c <= 127) {
-        return c;
-    } else {
+int max_com_len = 10; // max command length
+
+int LINE = 0;   // current line (ROW)
+int COLUMN = 0; // current column
+
+int focus_mode = 0;
+int focus_mode_col = 0;
+
+// Prototypes
+function writeChar(int c): int;
+function writeCharAt(char c, int line, int col): int;
+function saveScreen();
+function writeInt(int a): int;
+
+int[] display = allocate int[SIZE]; // Initialize display array
+
+function getAsciiValue(char c): int {
+    IF (c == 0) {
+        return 0;
+    } ELSE IF (c == 1) {
+        return 1;
+    } ELSE IF (c == 2) {
+        return 2;
+    } ELSE IF (c == 3) {
+        return 3;
+    } ELSE IF (c == 4) {
+        return 4;
+    } ELSE IF (c == 5) {
+        return 5;
+    } ELSE IF (c == 6) {
+        return 6;
+    } ELSE IF (c == 7) {
+        return 7;
+    } ELSE IF (c == 8) {
+        return 8;
+    } ELSE IF (c == 9) {
+        return 9;
+    } ELSE IF (c == 10) {
+        return 10;
+    } ELSE IF (c == 11) {
+        return 11;
+    } ELSE IF (c == 12) {
+        return 12;
+    } ELSE IF (c == 13) {
+        return 13;
+    } ELSE IF (c == 14) {
+        return 14;
+    } ELSE IF (c == 15) {
+        return 15;
+    } ELSE IF (c == 16) {
+        return 16;
+    } ELSE IF (c == 17) {
+        return 17;
+    } ELSE IF (c == 18) {
+        return 18;
+    } ELSE IF (c == 19) {
+        return 19;
+    } ELSE IF (c == 20) {
+        return 20;
+    } ELSE IF (c == 21) {
+        return 21;
+    } ELSE IF (c == 22) {
+        return 22;
+    } ELSE IF (c == 23) {
+        return 23;
+    } ELSE IF (c == 24) {
+        return 24;
+    } ELSE IF (c == 25) {
+        return 25;
+    } ELSE IF (c == 26) {
+        return 26;
+    } ELSE IF (c == 27) {
+        return 27;
+    } ELSE IF (c == 28) {
+        return 28;
+    } ELSE IF (c == 29) {
+        return 29;
+    } ELSE IF (c == 30) {
+        return 30;
+    } ELSE IF (c == 31) {
+        return 31;
+    } ELSE IF (c == ' ') {
+        return 32;
+    } ELSE IF (c == '!') {
+        return 33;
+    } ELSE IF (c == '"') {
+        return 34;
+    } ELSE IF (c == '#') {
+        return 35;
+    } ELSE IF (c == '$') {
+        return 36;
+    } ELSE IF (c == '%') {
+        return 37;
+    } ELSE IF (c == '&') {
+        return 38;
+    } ELSE IF (c == '\'') {
+        return 39;
+    } ELSE IF (c == '(') {
+        return 40;
+    } ELSE IF (c == ')') {
+        return 41;
+    } ELSE IF (c == '*') {
+        return 42;
+    } ELSE IF (c == '+') {
+        return 43;
+    } ELSE IF (c == ',') {
+        return 44;
+    } ELSE IF (c == '-') {
+        return 45;
+    } ELSE IF (c == '.') {
+        return 46;
+    } ELSE IF (c == '/') {
+        return 47;
+    } ELSE IF (c >= '0' AND c <= '9') {
+        return c - '0';
+    } ELSE IF (c >= 'A' AND c <= 'Z') {
+        return c - 'A' + 65;
+    } ELSE IF (c >= 'a' AND c <= 'z') {
+        return c - 'a' + 97;
+    } ELSE {
         return -1; // Invalid character
     }
 }
-
-// Clear the screen
-function clear_screen() {
-    if (SCREEN_LOCK == 0) {
-        for (let i = IO_DISPLAY_START + SIZE - 1; i >= IO_DISPLAY_START; i--) {
-            display[i] = 0; // Reset display memory
+void clear_screen() {
+    if (SCREEN_LOCK == 0) { // Proceed only if screen is not locked
+        int A = IO_DISPLAY_START + SIZE - 1; // Calculate the upper memory address limit
+        for (int i = A; i >= IO_DISPLAY_START; i--) { 
+            write_mem(i, 0); // Set each memory location within range to 0
         }
-        LINE = 0;
-        COLUMN = 0;
+        LINE = 0;    // Reset the cursor line position to the start
+        COLUMN = 0;  // Reset the cursor column position to the start
     }
 }
-
-// Write a character to the current position
-function write_char(c) {
-    let ascii = getAsciiValue(c);
-    if (ascii >= 0) {
-        let position = LINE * ROW_CHAR_SIZE + COLUMN;
-        if (position < SIZE) {
-            display[position] = ascii;
-            COLUMN++;
-            if (COLUMN >= ROW_CHAR_SIZE) {
+int write_char(int c) {
+    if (SCREEN_LOCK == 0) { // Check if screen is unlocked
+        if (c == 10) { // '\n'
+            COLUMN = 0;
+            LINE += 8;
+            if (LINE >= 8 * COLUMN_CHAR_SIZE) {
+                clear_screen();
+                LINE = 0;
                 COLUMN = 0;
-                LINE++;
-                if (LINE >= COLUMN_CHAR_SIZE) {
+                return 1;
+            }
+            return 0;
+        } else if (c == 95) { // '_'
+            COLUMN++;
+            if (COLUMN == ROW_CHAR_SIZE) { // Row full
+                COLUMN = 0;
+                LINE += 8;
+                if (LINE >= 8 * COLUMN_CHAR_SIZE) {
+                    clear_screen();
                     LINE = 0;
+                    COLUMN = 0;
+                    return 1;
                 }
             }
-            return 0; // Success
+        } else if (c == 13) { // '\r'
+            COLUMN = 0;
+            return 0;
+        } else if (c == 12) { // '\f'
+            LINE += 8;
+            if (LINE >= 8 * COLUMN_CHAR_SIZE) {
+                clear_screen();
+                LINE = 0;
+                COLUMN = 0;
+                return 1;
+            }
+            return 0;
+        } else if (c == 9) { // '\t'
+            COLUMN += 4;
+            if (COLUMN >= ROW_CHAR_SIZE) {
+                COLUMN = 0;
+                LINE += 8;
+                if (LINE >= 8 * COLUMN_CHAR_SIZE) {
+                    clear_screen();
+                    LINE = 0;
+                    COLUMN = 0;
+                    return 1;
+                }
+            }
+            return 0;
+        } else if (c == 8) { // '\b'
+            if (COLUMN == 0) {
+                if (LINE == 0) {
+                    return 0;
+                } else {
+                    COLUMN = ROW_CHAR_SIZE - 1;
+                    LINE -= 8;
+                }
+            } else {
+                COLUMN--;
+            }
+            int A = IO_DISPLAY_START + (ROW_CHAR_SIZE * LINE) / 4 + COLUMN / 4;
+            for (int i = 0; i < 8; i++) {
+                int read = read_mem(A + (ROW_CHAR_SIZE / 4) * i);
+                int write = read / 256;
+                int j = COLUMN % 4;
+                for (int q = 3; q > j; q--) {
+                    write /= 256;
+                }
+                write_mem(A + (ROW_CHAR_SIZE / 4) * i, write);
+            }
+            return 0;
+        } else { // Normal character
+            int font[8];
+            for (int i = 0; i < 8; i++) {
+                font[i] = font_map[c][i];
+            }
+            int A = IO_DISPLAY_START + (ROW_CHAR_SIZE * LINE) / 4 + COLUMN / 4;
+            for (int i = 0; i < 8; i++) {
+                int read = read_mem(A + (ROW_CHAR_SIZE / 4) * i);
+                int write = font[i];
+                int j = COLUMN % 4;
+                for (int q = 3; q > j; q--) {
+                    write *= 256;
+                }
+                write_mem(A + (ROW_CHAR_SIZE / 4) * i, write + read);
+            }
+            COLUMN++;
+            if (COLUMN == ROW_CHAR_SIZE) { // Row full
+                COLUMN = 0;
+                LINE += 8;
+                return 0;
+            }
+            if (LINE >= 8 * COLUMN_CHAR_SIZE) { // Screen full
+                LINE = 0;
+                COLUMN = 0;
+                return 1;
+            }
+            return 0;
         }
     }
-    return 1; // Failure
+    return 1;
 }
 
-// Write a character at a specific position
-function write_char_at(c, line, col) {
-    let ascii = getAsciiValue(c);
-    if (ascii >= 0 && line >= 0 && col >= 0 && line < COLUMN_CHAR_SIZE && col < ROW_CHAR_SIZE) {
-        let position = line * ROW_CHAR_SIZE + col;
-        display[position] = ascii;
-        return 0; // Success
+int write_char_at(int c, int line, int col) {
+    if (SCREEN_LOCK == 0) {
+        if (line < 0 || line >= 8 * COLUMN_CHAR_SIZE || col < 0 || col >= ROW_CHAR_SIZE) {
+            return 1;
+        }
+        LINE = line;
+        COLUMN = col;
+        return write_char(c);
     }
-    return 1; // Failure
+    return 1;
 }
 
-// Save the current screen (dummy implementation for now)
-function save_screen() {
-    // Implement screen saving logic here
+int print_string(char msg[]) {
+    int len = 0;
+    while (msg[len] != '\0') {
+        len++;
+    }
+    int ascii_values[len];
+    for (int i = 0; i < len; i++) {
+        ascii_values[i] = getAsciiValue(msg[i]);
+    }
+    return write_string_at_col(ascii_values, len, LINE, COLUMN);
 }
 
-// Main program execution (example)
-function main() {
-    clear_screen();
-    write_char('A');
-    write_char_at('B', 10, 5);
-    save_screen();
+int write_string_at_col(int msg[], int len, int line = LINE, int col = COLUMN) {
+    if (SCREEN_LOCK == 0) {
+        if (line >= 8 * COLUMN_CHAR_SIZE || col >= ROW_CHAR_SIZE || col < 0) {
+            return 1;
+        }
+        LINE = line;
+        COLUMN = col;
+        for (int i = 0; i < len; i++) {
+            int result = write_char_at(msg[i], LINE, COLUMN);
+            if (result != 0) {
+                return result;
+            }
+        }
+    }
+    return 1;
 }
 
-main();
+void read_line(char msg[]) {
+    // Functionality for reading a line can be implemented as per requirements
+}
