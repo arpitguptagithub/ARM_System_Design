@@ -1,26 +1,30 @@
-function fibonacci(Int n) {
+void fibonacci(Int n) {
     IF (n <= 0) {
-        print("Please enter a positive number.");
+        print_String("Please enter a positive number.\n", 31);
         RETURN;
     }
 
     Int a = 0;
     Int b = 1;
-    print("Fibonacci Series: ");
-    print(a + " ");
-    print(b + " ");
+    print_String("Fibonacci Series: ", 18);
+    print_int(a);
+    print_String(" ", 1);
+    print_int(b);
+    print_String(" ", 1);
 
     FOR (Int i = 2; i < n; i++) {
         Int next = a + b;
-        print(next + " ");
+        print_int(next);
+        print_String(" ", 1);
         a = b;
         b = next;
     }
 
+    print_String("\n", 1);
     RETURN;
 }
 
-function  main() {
+Int main() {
     Int terms = 10; // Number of terms in the Fibonacci series
     fibonacci(terms); // Call the fibonacci function
     RETURN 0;
