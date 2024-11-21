@@ -40,11 +40,11 @@
 // #include <bitset>//
 // #include <vector>//
 
-#define ROW_CHAR_SIZE 40
-#define COLUMN_CHAR_SIZE 30
+#define ROW_CHAR_SIZE 64
+#define COLUMN_CHAR_SIZE 37
 #define SCREEN_LOCK 0
 #define IO_DISPLAY_START 0
-#define SIZE 2400
+#define SIZE 4800
 int max_com_len = 10; // max command length
 
 int LINE = 0;   // current line (ROW)
@@ -293,7 +293,7 @@ int getAsciiValue(char c) {
 //         int A = IO_DISPLAY_START + ROW_CHAR_SIZE * line;
 //         for (int i = 0; i < ROW_CHAR_SIZE * 8; i++)
 //         {
-//             OS_mwrite(0, A + i);
+//             memory.write_mem(0, A + i);
 //         }
 
 //         return 0;
@@ -309,7 +309,7 @@ int getAsciiValue(char c) {
 //         int A = IO_DISPLAY_START + ROW_CHAR_SIZE * LINE;
 //         for (int i = 0; i < ROW_CHAR_SIZE * 8; i++)
 //         {
-//             OS_mwrite(0, A + i);
+//             memory.write_mem(0, A + i);
 //         }
 
 //         return 0;
@@ -324,7 +324,7 @@ void clear_screen()
         int A = IO_DISPLAY_START+SIZE-1;
         for (int i = A; i >= IO_DISPLAY_START; i--)
         {
-            display[i]=0;//OS_mwrite(0, i);
+            memory.write_mem(i,0);//display[i]=0;
         }
 
         LINE = 0;
@@ -433,13 +433,13 @@ int write_char(int c)
 
             for (int i = 0; i < 8; i++)
             {
-                int read = display[A+(ROW_CHAR_SIZE/4)*i];//OS_mread(A+(ROW_CHAR_SIZE/4)*i);
+                int read = memory.read_mem(A+(ROW_CHAR_SIZE/4)*i);//display[A+(ROW_CHAR_SIZE/4)*i];
                 int write = read/256;
                 int j=COLUMN%4;
                 for(int q=3; q>j;q--){
                     write=write/256;
                 }
-                display[ A+(ROW_CHAR_SIZE/4)*i]=write;//OS_mwrite(write, A+(ROW_CHAR_SIZE/4)*i);    
+                memory.write_mem(A+(ROW_CHAR_SIZE/4)*i,write);//display[ A+(ROW_CHAR_SIZE/4)*i]=write;
             }
 
             return 0;
@@ -455,13 +455,13 @@ int write_char(int c)
             int A = IO_DISPLAY_START + (ROW_CHAR_SIZE * LINE)/4 + COLUMN/4; // location of the first character in the line
             for (int i = 0; i < 8; i++)
             {
-                int read = display[ A+(ROW_CHAR_SIZE/4)*i];//OS_mread(A+(ROW_CHAR_SIZE/4)*i);
+                int read = memory.read_mem(A+(ROW_CHAR_SIZE/4)*i);//display[ A+(ROW_CHAR_SIZE/4)*i];
                 int write = font[i];
                 int j=COLUMN%4;
                 for(int q=3; q>j;q--){
                     write=write*256;
                 }
-                display[ A+(ROW_CHAR_SIZE/4)*i]=write+read;//OS_mwrite(write+read, A+(ROW_CHAR_SIZE/4)*i);    
+                memory.write_mem(A+(ROW_CHAR_SIZE/4)*i,write+read);  //display[ A+(ROW_CHAR_SIZE/4)*i]=write+read;  
             }
 
             COLUMN++;
@@ -633,8 +633,8 @@ void read_line(char msg[]){
 
 //     for (int i = 0; i < IO_DISPLAY_SIZE; i++)
 //     {
-//         char temp = OS_mread(A + i);
-//         OS_mwrite(temp,D + i);////////
+//         char temp = memory.read_mem(A + i);
+//         memory.write_mem(temp,D + i);////////
 //     }
 // }
 
@@ -646,8 +646,8 @@ void read_line(char msg[]){
 
 //     for (int i = 0; i < IO_DISPLAY_SIZE; i++)
 //     {
-//         char temp = OS_mread(D + i);
-//         OS_mwrite(temp,A + i );////////////////
+//         char temp = memory.read_mem(D + i);
+//         memory.write_mem(temp,A + i );////////////////
 //     }
 // }
 

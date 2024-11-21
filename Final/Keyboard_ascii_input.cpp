@@ -12,20 +12,18 @@ int l=0;
 char buffer[100];
 
 void keyboard_init() {
-    OS_minit();
     int start = IO_KEYBOARD_START;
     int end = IO_KEYBOARD_START + IO_KEYBOARD_SIZE;
     for (int i = start; i < end; i++) {
-        OS_mwrite(0, i);
+        memory.write_mem(i,0);
     }
 }
 
 int keyboard_clear_input() {
-    OS_minit();
     int start = IO_KEYBOARD_START;
     int end = IO_KEYBOARD_START + IO_KEYBOARD_SIZE;
     for (int i = start; i < end; i++) {
-        OS_mwrite(0, i);
+        memory.write_mem(i,0);
     }
     return 0;
 }
@@ -33,12 +31,11 @@ int keyboard_clear_input() {
 int keyboard_get_input() {
     int input = 0;
     while (true) {
-        OS_minit();
-        int f = OS_mread(IO_KEYBOARD_START);
+        int f = memory.read_mem(IO_KEYBOARD_START);
 
         if (f != 0) {
             input = f;
-            OS_mwrite(0, IO_KEYBOARD_START);
+            memory.write_mem(IO_KEYBOARD_START,0);
             break;
         }
     }
@@ -51,8 +48,8 @@ int keyboard_get_input() {
 //     while (true) {
 //         OS_minit();
 
-//         char f = OS_mread(IO_KEYBOARD_START);
-//         OS_mwrite(0, IO_KEYBOARD_START);
+//         char f = memory.read_mem(IO_KEYBOARD_START);
+//         memory.write_mem(0, IO_KEYBOARD_START);
 
 //         if (f == INT_END_POINT) {
 //             // printf("Keyboard int end\n");
