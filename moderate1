@@ -1,4 +1,4 @@
-Void selectionSort(Int[] arr, Int n) {
+void selectionSort(Int arr[], Int n) {
     FOR (Int i = 0; i < n - 1; i++) {
         // Find the minimum element in the unsorted portion
         Int minIndex = i;
@@ -17,7 +17,7 @@ Void selectionSort(Int[] arr, Int n) {
     }
 }
 
-Void displayArray(Int[] arr, Int n) {
+void displayArray(Int arr[], Int n) {
     FOR (Int i = 0; i < n; i++) {
         print_int(arr[i]);
         print_String(" ", 1);
@@ -25,16 +25,16 @@ Void displayArray(Int[] arr, Int n) {
     print_String("\n", 1);
 }
 
-Void main() {
-    Int[] arr = {64, 25, 12, 22, 11};
+void main() {
+    Int arr[5] = {64, 25, 12, 22, 11};
     Int n = 5;
 
-    print_String("Original array:\n", 17);
+    //print_String("Original array:\n", 17);
     displayArray(arr, n);
 
     // Perform selection sort
     selectionSort(arr, n);
 
-    print_String("Sorted array:\n", 15);
+    //print_String("Sorted array:\n", 15);
     displayArray(arr, n);
 }
