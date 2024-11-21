@@ -1,0 +1,129 @@
+#include "keyboard.ppc"
+#include "commands.ppc"
+#include "memory.ppc"
+#include "string.ppc"
+
+field Array ls = "ls";
+field Array cat = "cat";
+field Array echo = "echo";
+field Array clear = "clear";
+field Array fibonacci = "fibonacci";
+field Array prime = "prime";
+field Array sort = "sort";
+field Array help = "help";
+field Array sum = "sum";
+field Array add = "add";
+field Array helloworld = "helloworld";
+field Array factorial = "factorial";
+
+field Array buffer; // buffer is a dynamic array, no fixed size in Teja
+field int buffer_index;
+field int buffer_size;
+field int number;
+
+method void init() {
+    keyboard_init();
+    clear_screen();
+    buffer_index = 0;
+    buffer_size = 0;
+    number = 0;
+    write_char('>');
+}
+
+method void clear_buf() {
+    for (int i = 0; i < buffer_size; i = i + 1) {
+        buffer[i] = '\0';
+    }
+    buffer_size = 0;
+}
+
+method void input() {
+    field int c;
+    
+    // Ignore spaces
+    while (true) {
+        c = keyboard_get_input();
+        if (c != 32) {
+            break;
+            write_char(c);
+        }
+    }
+
+    while (true) {
+        c = keyboard_get_input();
+        if (c == 13) { // Enter key (ASCII 13)
+            buffer[buffer_index] = '\0';
+            buffer_size = buffer_index;
+            buffer_index = 0;
+            write_char(c);
+            break;
+        } else {
+            buffer[buffer_index] = c;
+            buffer_index = buffer_index + 1;
+            write_char(c);
+        }
+    }
+}
+
+method void output() {
+    print_string(buffer);
+}
+
+method boolean strcmp(field Array str1, field Array str2) {
+    field int i = 0;
+    while (str1[i] != '\0' && str2[i] != '\0') {
+        if (str1[i] != str2[i]) {
+            return false;
+        }
+        i = i + 1;
+    }
+    if (str1[i] == '\0' && str2[i] == '\0') {
+        return true;
+    }
+    return false;
+}
+
+method void main() {
+    init();
+    while (true) {
+        input();
+        
+        if (buffer[0] >= 48 && buffer[0] <= 57) {
+            number = 0;
+            for (int i = 0; i < buffer_size; i = i + 1) {
+                number = number * 10 + (buffer[i] - 48);
+            }
+            write_int(number);
+        }
+        
+        if (strcmp(buffer, ls)) {
+            ls();
+        } else if (strcmp(buffer, cat)) {
+            cat();
+        } else if (strcmp(buffer, echo)) {
+            echo();
+        } else if (strcmp(buffer, clear)) {
+            clear_screen();
+        } else if (strcmp(buffer, fibonacci)) {
+            fibonacci.main();
+        } else if (strcmp(buffer, prime)) {
+            prime.main();
+        } else if (strcmp(buffer, sort)) {
+            sort.main();
+        } else if (strcmp(buffer, help)) {
+            help();
+        } else if (strcmp(buffer, sum)) {
+            sum.main();
+        } else if (strcmp(buffer, add)) {
+            add.main();
+        } else if (strcmp(buffer, helloworld)) {
+            helloworld();
+        } else if (strcmp(buffer, factorial)) {
+            factorial.main();
+        } else {
+            print_string("Command not found", 0);
+        }
+
+        write_char('>');
+    }
+}
