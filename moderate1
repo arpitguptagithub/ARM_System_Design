@@ -1,8 +1,8 @@
-function selectionSort(int[] arr, int n) {
-    FOR (int i = 0; i < n - 1; i++) {
+Void selectionSort(Int[] arr, Int n) {
+    FOR (Int i = 0; i < n - 1; i++) {
         // Find the minimum element in the unsorted portion
-        int minIndex = i;
-        FOR (int j = i + 1; j < n; j++) {
+        Int minIndex = i;
+        FOR (Int j = i + 1; j < n; j++) {
             IF (arr[j] < arr[minIndex]) {
                 minIndex = j;
             }
@@ -10,30 +10,31 @@ function selectionSort(int[] arr, int n) {
 
         // Swap the found minimum element with the first element
         IF (minIndex != i) {
-            int temp = arr[i];
+            Int temp = arr[i];
             arr[i] = arr[minIndex];
             arr[minIndex] = temp;
         }
     }
 }
 
-function displayArray(int[] arr, int n) {
-    FOR (int i = 0; i < n; i++) {
-        print(arr[i] + " ");
+Void displayArray(Int[] arr, Int n) {
+    FOR (Int i = 0; i < n; i++) {
+        print_int(arr[i]);
+        print_String(" ", 1);
     }
-    print("\n");
+    print_String("\n", 1);
 }
 
-function main() {
-    int[] arr = {64, 25, 12, 22, 11};
-    int n = 5;
+Void main() {
+    Int[] arr = {64, 25, 12, 22, 11};
+    Int n = 5;
 
-    print("Original array:\n");
+    print_String("Original array:\n", 17);
     displayArray(arr, n);
 
     // Perform selection sort
     selectionSort(arr, n);
 
-    print("Sorted array:\n");
+    print_String("Sorted array:\n", 15);
     displayArray(arr, n);
 }
