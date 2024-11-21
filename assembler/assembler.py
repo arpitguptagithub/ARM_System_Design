@@ -1,4 +1,5 @@
 import re
+import sys
 from collections import defaultdict
 from St_Entry import ST_Entry
 
@@ -1311,8 +1312,12 @@ class Assembler:
 
 
 if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python assembler.py <src_file.asm>")
+        sys.exit(1)
+    path = sys.argv[1]
     assembler = Assembler()
-    machine_code = assembler.assemble("asmout.asm")
+    machine_code = assembler.assemble(path)
     # machine_code = assembler.assemble("vmout.asm")
     print(f"Machine code: {machine_code}")
     
