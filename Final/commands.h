@@ -60,6 +60,12 @@ void echo(){
     output();
 }
 
+void clear_screen(){
+    clear_screen();
+}
+
+
+
 void help(){
     print_string("ls: list files\n");
     print_string("cat: open file\n");

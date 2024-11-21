@@ -1,6 +1,8 @@
-#define Key_Buffer 250000
-#define Display 250001
-#define DisplaySize 19200
+#DEFINE Keyboard_address 250000
+#DEFINE Display_start 250001
+#DEFINE DisplaySize 19200
+#DEFINE Heap_start 4
+#DEFINE Stack_start 250000
 
 class Memory {
     // Constants and fields

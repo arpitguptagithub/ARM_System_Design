@@ -1,0 +1,126 @@
+void main() {
+    // Define the matrix
+    int n = 3;
+    float matrix[3][3] = {
+        {1, 2, 3},
+        {0, 1, 4},
+        {5, 6, 0}
+    };
+
+    // Function to calculate determinant
+    float determinant(float matrix[3][3], int n) {
+        IF (n == 1) {
+            return matrix[0][0];
+        }
+
+        float det = 0;
+        float temp[3][3];  // To store cofactors
+        int sign = 1;  // To store sign multiplier
+
+        // Iterate over the first row
+        FOR (int f = 0; f < n; f++) {
+            // Get cofactor of matrix[0][f]
+            getCofactor(matrix, temp, 0, f, n);  
+            det += sign * matrix[0][f] * determinant(temp, n - 1);  // Add to determinant
+            sign = -sign;  // Alternate the sign for cofactors
+        }
+
+        RETURN det;
+    }
+
+    // Function to get the cofactor of matrix[p][q]
+    void getCofactor(float matrix[3][3], float temp[3][3], int p, int q, int n) {
+        int i = 0, j = 0;
+
+        // Loop through each element of the matrix
+        FOR (int row = 0; row < n; row++) {
+            FOR (int col = 0; col < n; col++) {
+                // Copy elements to temp matrix except the current row and column
+                IF (row != p && col != q) {
+                    temp[i][j++] = matrix[row][col];
+
+                    // Move to the next row when the end of a row is reached
+                    IF (j == n - 1) {
+                        j = 0;
+                        i++;
+                    }
+                }
+            }
+        }
+    }
+
+    // Function to calculate adjoint of the matrix
+    void adjoint(float matrix[3][3], float adj[3][3], int n) {
+        IF (n == 1) {
+            adj[0][0] = 1;
+            RETURN;
+        }
+
+        float temp[3][3];  // To store cofactors
+        int sign;
+
+        FOR (int i = 0; i < n; i++) {
+            FOR (int j = 0; j < n; j++) {
+                // Get cofactor of matrix[i][j]
+                getCofactor(matrix, temp, i, j, n);
+
+                // Sign of adjoint[j][i] positive if (i+j) is even, negative if odd
+                sign = ((i + j) % 2 == 0) ? 1 : -1;
+
+                // Transpose of cofactors is stored in adj
+                adj[j][i] = sign * determinant(temp, n - 1);
+            }
+        }
+    }
+
+    // Function to calculate the inverse of the matrix
+    void inverseMatrix(float matrix[3][3], int n) {
+        // Check if matrix is square
+        IF (n != matrix[0].length) {
+            print_String("Matrix must be square!\n", 17);
+            RETURN;
+        }
+
+        // Calculate determinant
+        float det = determinant(matrix, n);
+        IF (det == 0) {
+            print_String("Matrix is singular, inverse does not exist.\n", 45);
+            RETURN;
+        }
+
+        // Calculate adjoint
+        float adj[3][3];
+        adjoint(matrix, adj, n);
+
+        // Calculate inverse using adjoint and determinant
+        float inv[3][3];
+        FOR (int i = 0; i < n; i++) {
+            FOR (int j = 0; j < n; j++) {
+                inv[i][j] = adj[i][j] / det;
+            }
+        }
+
+        // Display the inverse matrix
+        print_String("\nInverse matrix:\n", 17);
+        FOR (int i = 0; i < n; i++) {
+            FOR (int j = 0; j < n; j++) {
+                print_float(inv[i][j]);
+                print_String(" ", 1);
+            }
+            print_String("\n", 1);
+        }
+    }
+
+    // Display the original matrix
+    print_String("Original matrix:\n", 18);
+    FOR (int i = 0; i < n; i++) {
+        FOR (int j = 0; j < n; j++) {
+            print_float(matrix[i][j]);
+            print_String(" ", 1);
+        }
+        print_String("\n", 1);
+    }
+
+    // Call inverseMatrix function to calculate and display the inverse
+    inverseMatrix(matrix, n);
+}

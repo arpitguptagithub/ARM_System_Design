@@ -1,0 +1,113 @@
+class HBSTNode {
+    Int key;
+    Pointer<HBSTNode> left;
+    Pointer<HBSTNode> right;
+    Int height;
+
+    HBSTNode(Int k) {
+        key = k;
+        left = allocate<HBSTNode>();
+        right = allocate<HBSTNode>();
+        height = 1; // New node starts at height 1
+    }
+}
+
+class HeightBalancedSearchTree {
+    // Helper function to get the height of the node
+    height(Pointer<HBSTNode> node): Int {
+        IF (node == NULL) {
+            RETURN 0;
+        }
+        RETURN node->height;
+    }
+
+    // Helper function to get the balance factor of the node
+    getBalance(Pointer<HBSTNode> node, Int key, Pointer<HBSTNode> left, Pointer<HBSTNode> right, Int height): Int {
+        IF (node == NULL) {
+            RETURN 0;
+        }
+        RETURN height(left) - height(right);
+    }
+
+    // Right rotation function
+    rightRotate(Pointer<HBSTNode> y, Pointer<HBSTNode> left, Pointer<HBSTNode> right, Int height): Pointer<HBSTNode> {
+        Pointer<HBSTNode> x = y->left;
+        Pointer<HBSTNode> T2 = x->right;
+
+        // Perform rotation
+        x->right = y;
+        y->left = T2;
+
+        // Update heights
+        y->height = Math.max(height(y->left), height(y->right)) + 1;
+        x->height = Math.max(height(x->left), height(x->right)) + 1;
+
+        // Return new root
+        RETURN x;
+    }
+
+    // Left rotation function
+    leftRotate(Pointer<HBSTNode> x, Pointer<HBSTNode> left, Pointer<HBSTNode> right, Int height): Pointer<HBSTNode> {
+        Pointer<HBSTNode> y = x->right;
+        Pointer<HBSTNode> T2 = y->left;
+
+        // Perform rotation
+        y->left = x;
+        x->right = T2;
+
+        // Update heights
+        x->height = Math.max(height(x->left), height(x->right)) + 1;
+        y->height = Math.max(height(y->left), height(y->right)) + 1;
+
+        // Return new root
+        RETURN y;
+    }
+
+    // Insert a node into the tree
+    insert(Pointer<HBSTNode> node, Int key, Pointer<HBSTNode> left, Pointer<HBSTNode> right, Int height): Pointer<HBSTNode> {
+        IF (node == NULL) {
+            RETURN allocate<HBSTNode>(key);
+        }
+
+        IF (key < node->key) {
+            node->left = insert(node->left, key, left, right, height);
+        } ELSE IF (key > node->key) {
+            node->right = insert(node->right, key, left, right, height);
+        } ELSE {
+            RETURN node; // Duplicate keys are not allowed in the BST
+        }
+
+        // Update the height of the ancestor node
+        node->height = 1 + Math.max(height(node->left), height(node->right));
+
+        // Get the balance factor to check if this node became unbalanced
+        Int balance = getBalance(node, key, node->left, node->right, node->height);
+
+        // If the node becomes unbalanced, handle the 4 cases
+
+        // Left Left Case
+        IF (balance > 1 && key < node->left->key) {
+            RETURN rightRotate(node, node->left, node->right, node->height);
+        }
+
+        // Right Right Case
+        IF (balance < -1 && key > node->right->key) {
+            RETURN leftRotate(node, node->left, node->right, node->height);
+        }
+
+        // Left Right Case
+        IF (balance > 1 && key > node->left->key) {
+            node->left = leftRotate(node->left, node->left->left, node->left->right, node->left->height);
+            RETURN rightRotate(node, node->left, node->right, node->height);
+        }
+
+        // Right Left Case
+        IF (balance < -1 && key < node->right->key) {
+            node->right = rightRotate(node->right, node->right->left, node->right->right, node->right->height);
+            RETURN leftRotate(node, node->left, node->right, node->height);
+        }
+
+        // Return the unchanged node pointer
+        RETURN node;
+    }
+}

@@ -1,0 +1,20 @@
+int factorial(int n) {
+    IF (n == 0 OR n == 1) {
+        RETURN 1;
+    } ELSE {
+        RETURN n * factorial(n - 1);
+    }
+}
+
+int main() {
+    int number = 5;
+    int result = factorial(number);
+
+    //print_String("The factorial of ", 17);
+    //print_int(number);
+    //print_String(" is: ", 5);
+    //print_int(result);
+    //print_String("\n", 1);
+
+    RETURN result;
+}

@@ -1,7 +1,10 @@
-#include "keyboard.cpp"
-#include "commands.cpp"
+#include "Keyboard_ascii_input.cpp"
+#include "commands.h"
 #include "memory.cpp"
 #include "string.cpp"
+
+#define 
+
 
 char ls[100] = "ls";
 char cat[100] = "cat";

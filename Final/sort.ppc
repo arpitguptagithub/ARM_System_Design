@@ -1,0 +1,36 @@
+void main() {
+    int arr[5] = {64, 25, 12, 22, 11};
+    int n = 5;
+
+    // Display the original array
+    FOR (int i = 0; i < n; i++) {
+        print_int(arr[i]);
+        print_String(" ", 1);
+    }
+    print_String("\n", 1);
+
+    // Perform selection sort
+    FOR (int i = 0; i < n - 1; i++) {
+        // Find the minimum element in the unsorted portion
+        int minIndex = i;
+        FOR (int j = i + 1; j < n; j++) {
+            IF (arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
+        }
+
+        // Swap the found minimum element with the first element
+        IF (minIndex != i) {
+            int temp = arr[i];
+            arr[i] = arr[minIndex];
+            arr[minIndex] = temp;
+        }
+    }
+
+    // Display the sorted array
+    FOR (int i = 0; i < n; i++) {
+        print_int(arr[i]);
+        print_String(" ", 1);
+    }
+    print_String("\n", 1);
+}

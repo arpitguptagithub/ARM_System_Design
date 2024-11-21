@@ -1,6 +1,9 @@
-#DEFINE Key_Buffer 250000
-#DEFINE Display 250001
+#DEFINE Keyboard_address 250000
+#DEFINE Display_start 250001
 #DEFINE DisplaySize 19200
+#DEFINE Heap_start 4
+#DEFINE Stack_start 250000
+
 
 class Memory {
 private:

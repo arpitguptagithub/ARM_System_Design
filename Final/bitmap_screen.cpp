@@ -19,7 +19,7 @@
  *
  * Memory size: 200 kB
  *
- *  display => 38kB
+ *  display => 19kB
  *  fontmap => 2kB
  *  temp    => 10kB
  *

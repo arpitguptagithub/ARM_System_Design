@@ -1,0 +1,14 @@
+int main() {
+    int numbers[5] = {1, 2, 3, 4, 5};
+    int size = 5;
+    int sum = 0;
+
+    // Calculate the sum of the array
+    FOR (int i = 0; i < size; i++) {
+        sum += numbers[i];
+    }
+
+    // Print the total sum
+   // print_int(sum);
+    RETURN sum;
+}

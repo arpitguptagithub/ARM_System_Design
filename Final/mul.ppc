@@ -1,0 +1,11 @@
+int multiply(int a, int b) {
+    return a * b;
+}
+
+int main() {
+    int num1 = 3;
+    int num2 = 5;
+    int result = multiply(num1, num2);
+    //print_int(result);  
+    RETURN result;
+}

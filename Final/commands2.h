@@ -18,38 +18,38 @@ func cat() {
         return
     }
     if (buffer == "fibonacci") {
-        print "fibonacci"
+        sys_exec("fibonacci");
         return
     }
     if (buffer == "prime") {
-        print "prime"
+        sys_exec("prime");
         return
     }
     if (buffer == "sort") {
-        print "sort"
+        sys_exec("sort");
         return
     }
     if (buffer == "help") {
-        print "help"
+        sys_exec("help");
         return
     }
     if (buffer == "sum") {
-        print "sum"
+        sys_exec("sum");
         return
     }
     if (buffer == "add") {
-        print "add"
+        sys_exec("add");
         return
     }
     if (buffer == "helloworld") {
-        print "helloworld"
+        sys_exec("helloworld");
         return
     }
     if (buffer == "factorial") {
-        print "factorial"
+        sys_exec("factorial");
         return
     }
-    print "No such file"
+
 }
 
 // Function to echo input (print back what the user types)
