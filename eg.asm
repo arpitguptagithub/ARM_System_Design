@@ -1,3 +1,4 @@
+.global start
 start:
     MOV R0, #1
     MOV R1, #10
