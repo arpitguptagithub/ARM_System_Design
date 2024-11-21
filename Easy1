@@ -1,4 +1,4 @@
-int add(Int a, Int b) {
+int add(int a, int b) {
     RETURN a + b;
 }
 
