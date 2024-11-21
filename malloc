@@ -1,0 +1,85 @@
+// Global variable to act as the heap memory pool
+#define HEAP_SIZE 100000
+char heap[HEAP_SIZE];  // Simulate a heap of 100000 bytes
+int heapPointer = 0;  // This points to the next available memory address in the heap
+
+// Function to allocate memory (like malloc)
+void* malloc(int size) {
+    // Check if we have enough memory
+    IF (heapPointer + size > HEAP_SIZE) {
+        print_String("Memory allocation failed: Not enough memory.\n", 45);
+        RETURN null;  // Return null if memory cannot be allocated
+    }
+
+    // Allocate memory by updating the heap pointer
+    void* ptr = &heap[heapPointer];
+    heapPointer += size;  // Move the heap pointer forward by the allocated size
+
+    RETURN ptr;
+}
+
+// Function to reallocate memory (like realloc)
+void* realloc(void* ptr, int newSize) {
+    // If ptr is null, just allocate new memory
+    IF (ptr == null) {
+        RETURN malloc(newSize);
+    }
+
+    // To simplify, we will not copy data in realloc
+    // Just allocate new memory and return the pointer to the new block
+    void* newPtr = malloc(newSize);
+    RETURN newPtr;
+}
+
+// Function to free memory (like free)
+void free(void* ptr) {
+    // For this simple simulation, we won't actually reclaim memory
+    // As we are using a simple heap memory model, memory is never truly freed in this version
+    // But we can reset the heap pointer if needed (not implemented here)
+    // In a real system, you would mark this memory as free in a more complex system
+    // Currently, we will just ignore it for simplicity
+}
+
+// Main function for testing
+void main() {
+    // Test memory allocation
+    int* arr = malloc(10 * sizeof(int));  // Allocate memory for 10 integers
+    IF (arr == null) {
+        print_String("Memory allocation failed!\n", 26);
+        RETURN;
+    }
+    
+    // Initialize array values
+    FOR (int i = 0; i < 10; i++) {
+        arr[i] = i * 10;
+    }
+
+    // Print the values
+    FOR (int i = 0; i < 10; i++) {
+        print_int(arr[i]);
+        print_String(" ", 1);
+    }
+    print_String("\n", 1);
+
+    // Test realloc
+    arr = realloc(arr, 20 * sizeof(int));  // Resize the array to 20 integers
+    IF (arr == null) {
+        print_String("Reallocation failed!\n", 22);
+        RETURN;
+    }
+
+    // Initialize the new part of the array
+    FOR (int i = 10; i < 20; i++) {
+        arr[i] = i * 10;
+    }
+
+    // Print the new values
+    FOR (int i = 0; i < 20; i++) {
+        print_int(arr[i]);
+        print_String(" ", 1);
+    }
+    print_String("\n", 1);
+
+    // Test free (this won't do anything in our simple model)
+    free(arr);
+}
