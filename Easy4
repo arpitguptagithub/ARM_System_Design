@@ -1,13 +1,14 @@
-function sumArray(int[] arr, int size): int {
+int sumArray(int arr[], int size) {
     int sum = 0;
     FOR (int i = 0; i < size; i++) {
         sum += arr[i];
     }
-    return sum;
+    RETURN sum;
 }
 
-function main() {
-    int[] numbers = {1, 2, 3, 4, 5};
+void main() {
+    int numbers[5] = {1, 2, 3, 4, 5};
     int total = sumArray(numbers, 5);
-    print("Total sum: " + total);
+    //print_int(total);  
+    RETURN total;
 }
