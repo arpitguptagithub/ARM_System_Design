@@ -1305,15 +1305,16 @@ class Assembler:
     def write_obj_file(self, machine_code, obj_file_path):
         with open(obj_file_path, "wb") as f:
              for instruction in machine_code:
-                binary_data = bytes.fromhex(instruction)
-                f.write(binary_data)
+                if instruction != None:    
+                    binary_data = bytes.fromhex(instruction)
+                    f.write(binary_data)
 
 
 if __name__ == "__main__":
     assembler = Assembler()
-    assembler.assemble("eg.asm")
+    machine_code = assembler.assemble("asmout.asm")
     # machine_code = assembler.assemble("vmout.asm")
-    # print(f"Machine code: {machine_code}")
+    print(f"Machine code: {machine_code}")
     
-    # assembler.write_obj_file(machine_code, "asmout.obj")
+    assembler.write_obj_file(machine_code, "asmout.obj")
     

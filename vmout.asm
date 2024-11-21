@@ -1,3 +1,0 @@
-MOV R0 ,#20 
-MOV R1 , #20
-ADDS R1 ,R0,R0
