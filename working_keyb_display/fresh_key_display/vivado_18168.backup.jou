@@ -1,0 +1,77 @@
+#-----------------------------------------------------------
+# Vivado v2024.1 (64-bit)
+# SW Build 5076996 on Wed May 22 18:37:14 MDT 2024
+# IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+# SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+# Start of session at: Tue Nov 19 16:20:36 2024
+# Process ID: 12444
+# Current directory: C:/Users/uday/Desktop/vivado/fresh_key_display
+# Command line: vivado.exe -gui_launcher_event rodinguilauncherevent17296 C:\Users\uday\Desktop\vivado\fresh_key_display\fresh_key_display.xpr
+# Log file: C:/Users/uday/Desktop/vivado/fresh_key_display/vivado.log
+# Journal file: C:/Users/uday/Desktop/vivado/fresh_key_display\vivado.jou
+# Running On        :DESKTOP-2QNIQRH
+# Platform          :Windows Server 2016 or Windows 10
+# Operating System  :22631
+# Processor Detail  :11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz
+# CPU Frequency     :2419 MHz
+# CPU Physical cores:4
+# CPU Logical cores :8
+# Host memory       :8215 MB
+# Swap memory       :6442 MB
+# Total Virtual     :14657 MB
+# Available Virtual :7864 MB
+#-----------------------------------------------------------
+start_gui
+open_project C:/Users/uday/Desktop/vivado/fresh_key_display/fresh_key_display.xpr
+update_compile_order -fileset sources_1
+close_project
+open_project {C:/Users/uday/Desktop/vivado/working key_display/fresh_key_display/fresh_key_display.xpr}
+update_compile_order -fileset sources_1
+open_hw_manager
+connect_hw_server -allow_non_jtag
+open_hw_target
+set_property PROGRAM.FILE {C:/Users/uday/Desktop/vivado/working key_display/fresh_key_display/fresh_key_display.runs/impl_1/TopModule.bit} [get_hw_devices xc7z010_1]
+current_hw_device [get_hw_devices xc7z010_1]
+refresh_hw_device -update_hw_probes false [lindex [get_hw_devices xc7z010_1] 0]
+set_property PROBES.FILE {} [get_hw_devices xc7z010_1]
+set_property FULL_PROBES.FILE {} [get_hw_devices xc7z010_1]
+set_property PROGRAM.FILE {C:/Users/uday/Desktop/vivado/working key_display/fresh_key_display/fresh_key_display.runs/impl_1/TopModule.bit} [get_hw_devices xc7z010_1]
+program_hw_devices [get_hw_devices xc7z010_1]
+refresh_hw_device [lindex [get_hw_devices xc7z010_1] 0]
+open_project C:/Users/uday/Desktop/davinci-master/testing/IO/Processor.xpr
+update_compile_order -fileset sources_1
+set_property PROBES.FILE {} [get_hw_devices xc7z010_1]
+set_property FULL_PROBES.FILE {} [get_hw_devices xc7z010_1]
+set_property PROGRAM.FILE {C:/Users/uday/Desktop/vivado/working key_display/fresh_key_display/fresh_key_display.runs/impl_1/TopModule.bit} [get_hw_devices xc7z010_1]
+program_hw_devices [get_hw_devices xc7z010_1]
+refresh_hw_device [lindex [get_hw_devices xc7z010_1] 0]
+set_property PROBES.FILE {} [get_hw_devices xc7z010_1]
+set_property FULL_PROBES.FILE {} [get_hw_devices xc7z010_1]
+set_property PROGRAM.FILE {C:/Users/uday/Desktop/vivado/working key_display/fresh_key_display/fresh_key_display.runs/impl_1/TopModule.bit} [get_hw_devices xc7z010_1]
+program_hw_devices [get_hw_devices xc7z010_1]
+refresh_hw_device [lindex [get_hw_devices xc7z010_1] 0]
+set_property PROBES.FILE {} [get_hw_devices xc7z010_1]
+set_property FULL_PROBES.FILE {} [get_hw_devices xc7z010_1]
+set_property PROGRAM.FILE {C:/Users/uday/Desktop/vivado/working key_display/fresh_key_display/fresh_key_display.runs/impl_1/TopModule.bit} [get_hw_devices xc7z010_1]
+program_hw_devices [get_hw_devices xc7z010_1]
+refresh_hw_device [lindex [get_hw_devices xc7z010_1] 0]
+set_property PROBES.FILE {} [get_hw_devices xc7z010_1]
+set_property FULL_PROBES.FILE {} [get_hw_devices xc7z010_1]
+set_property PROGRAM.FILE {C:/Users/uday/Desktop/vivado/working key_display/fresh_key_display/fresh_key_display.runs/impl_1/TopModule.bit} [get_hw_devices xc7z010_1]
+program_hw_devices [get_hw_devices xc7z010_1]
+refresh_hw_device [lindex [get_hw_devices xc7z010_1] 0]
+current_project fresh_key_display
+close_hw_manager
+current_project Processor
+open_hw_manager
+connect_hw_server -allow_non_jtag
+open_hw_target
+set_property PROGRAM.FILE {C:/Users/uday/Desktop/davinci-master/testing/IO/Processor.runs/impl_1/processor.bit} [get_hw_devices xc7z010_1]
+current_hw_device [get_hw_devices xc7z010_1]
+refresh_hw_device -update_hw_probes false [lindex [get_hw_devices xc7z010_1] 0]
+set_property PROBES.FILE {} [get_hw_devices xc7z010_1]
+set_property FULL_PROBES.FILE {} [get_hw_devices xc7z010_1]
+set_property PROGRAM.FILE {C:/Users/uday/Desktop/davinci-master/testing/IO/Processor.runs/impl_1/processor.bit} [get_hw_devices xc7z010_1]
+program_hw_devices [get_hw_devices xc7z010_1]
+refresh_hw_device [lindex [get_hw_devices xc7z010_1] 0]
+close_project

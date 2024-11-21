@@ -1,0 +1,96 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (win64) Build 5076996 Wed May 22 18:37:14 MDT 2024
+| Date         : Wed Nov 20 10:30:21 2024
+| Host         : DESKTOP-2QNIQRH running 64-bit major release  (build 9200)
+| Command      : report_control_sets -verbose -file TopModule_control_sets_placed.rpt
+| Design       : TopModule
+| Device       : xc7z010
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Control Set Information
+
+Table of Contents
+-----------------
+1. Summary
+2. Histogram
+3. Flip-Flop Distribution
+4. Detailed Control Set Information
+
+1. Summary
+----------
+
++----------------------------------------------------------+-------+
+|                          Status                          | Count |
++----------------------------------------------------------+-------+
+| Total control sets                                       |    18 |
+|    Minimum number of control sets                        |    18 |
+|    Addition due to synthesis replication                 |     0 |
+|    Addition due to physical synthesis replication        |     0 |
+| Unused register locations in slices containing registers |    95 |
++----------------------------------------------------------+-------+
+* Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
+** Run report_qor_suggestions for automated merging and remapping suggestions
+
+
+2. Histogram
+------------
+
++--------------------+-------+
+|       Fanout       | Count |
++--------------------+-------+
+| Total control sets |    18 |
+| >= 0 to < 4        |    10 |
+| >= 4 to < 6        |     3 |
+| >= 6 to < 8        |     1 |
+| >= 8 to < 10       |     0 |
+| >= 10 to < 12      |     2 |
+| >= 12 to < 14      |     0 |
+| >= 14 to < 16      |     0 |
+| >= 16              |     2 |
++--------------------+-------+
+* Control sets can be remapped at either synth_design or opt_design
+
+
+3. Flip-Flop Distribution
+-------------------------
+
++--------------+-----------------------+------------------------+-----------------+--------------+
+| Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
++--------------+-----------------------+------------------------+-----------------+--------------+
+| No           | No                    | No                     |              62 |           17 |
+| No           | No                    | Yes                    |               0 |            0 |
+| No           | Yes                   | No                     |              21 |            7 |
+| Yes          | No                    | No                     |              18 |           11 |
+| Yes          | No                    | Yes                    |               0 |            0 |
+| Yes          | Yes                   | No                     |               4 |            2 |
++--------------+-----------------------+------------------------+-----------------+--------------+
+
+
+4. Detailed Control Set Information
+-----------------------------------
+
++-----------------------------------------------+----------------------------------------------------+-----------------------------------------+------------------+----------------+--------------+
+|                  Clock Signal                 |                    Enable Signal                   |             Set/Reset Signal            | Slice Load Count | Bel Load Count | Bels / Slice |
++-----------------------------------------------+----------------------------------------------------+-----------------------------------------+------------------+----------------+--------------+
+|  keyboardDriver_inst/ps2_rx_unit/rx_done_tick |                                                    |                                         |                1 |              1 |         1.00 |
+| ~ps2c_IBUF_BUFG                               | keyboardDriver_inst/ps2_rx_unit/rx_data[1]_i_1_n_0 |                                         |                1 |              1 |         1.00 |
+| ~ps2c_IBUF_BUFG                               | keyboardDriver_inst/ps2_rx_unit/rx_data[4]_i_1_n_0 |                                         |                1 |              1 |         1.00 |
+| ~ps2c_IBUF_BUFG                               | keyboardDriver_inst/ps2_rx_unit/rx_data[5]_i_1_n_0 |                                         |                1 |              1 |         1.00 |
+| ~ps2c_IBUF_BUFG                               | keyboardDriver_inst/ps2_rx_unit/rx_data[3]_i_1_n_0 |                                         |                1 |              1 |         1.00 |
+| ~ps2c_IBUF_BUFG                               | keyboardDriver_inst/ps2_rx_unit/rx_data[2]_i_1_n_0 |                                         |                1 |              1 |         1.00 |
+| ~ps2c_IBUF_BUFG                               | keyboardDriver_inst/ps2_rx_unit/rx_data[0]_i_1_n_0 |                                         |                1 |              1 |         1.00 |
+| ~ps2c_IBUF_BUFG                               | keyboardDriver_inst/ps2_rx_unit/rx_data[7]         |                                         |                1 |              1 |         1.00 |
+| ~ps2c_IBUF_BUFG                               | keyboardDriver_inst/ps2_rx_unit/rx_data[6]         |                                         |                1 |              1 |         1.00 |
+|  clk_IBUF_BUFG                                |                                                    |                                         |                3 |              3 |         1.00 |
+|  displayDriver_inst/clk_TMDS                  |                                                    | displayDriver_inst/_inferred__0/i__n_0  |                1 |              4 |         4.00 |
+|  clk_IBUF_BUFG                                | keyboardDriver_inst/current_state[0]               | keyboardDriver_inst/dispData[6]_i_1_n_0 |                2 |              4 |         2.00 |
+| ~ps2c_IBUF_BUFG                               |                                                    |                                         |                2 |              5 |         2.50 |
+|  displayDriver_inst/pixclk                    |                                                    | displayDriver_inst/encode_G/SR[0]       |                2 |              7 |         3.50 |
+|  displayDriver_inst/pixclk                    |                                                    | displayDriver_inst/CounterX[9]_i_1_n_0  |                4 |             10 |         2.50 |
+|  displayDriver_inst/pixclk                    | displayDriver_inst/CounterX[9]_i_1_n_0             |                                         |                3 |             10 |         3.33 |
+|  displayDriver_inst/pixclk                    |                                                    |                                         |                6 |             22 |         3.67 |
+|  displayDriver_inst/clk_TMDS                  |                                                    |                                         |                5 |             31 |         6.20 |
++-----------------------------------------------+----------------------------------------------------+-----------------------------------------+------------------+----------------+--------------+
+
+

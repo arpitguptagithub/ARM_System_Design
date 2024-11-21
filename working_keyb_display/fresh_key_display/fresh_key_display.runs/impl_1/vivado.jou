@@ -1,0 +1,24 @@
+#-----------------------------------------------------------
+# Vivado v2024.1 (64-bit)
+# SW Build 5076996 on Wed May 22 18:37:14 MDT 2024
+# IP Build 5075265 on Wed May 22 21:45:21 MDT 2024
+# SharedData Build 5076995 on Wed May 22 18:29:18 MDT 2024
+# Start of session at: Wed Nov 20 10:34:06 2024
+# Process ID: 15504
+# Current directory: C:/Users/uday/Desktop/vivado/fresh_key_display/fresh_key_display.runs/impl_1
+# Command line: vivado.exe -log TopModule.vdi -applog -product Vivado -messageDb vivado.pb -mode batch -source TopModule.tcl -notrace
+# Log file: C:/Users/uday/Desktop/vivado/fresh_key_display/fresh_key_display.runs/impl_1/TopModule.vdi
+# Journal file: C:/Users/uday/Desktop/vivado/fresh_key_display/fresh_key_display.runs/impl_1\vivado.jou
+# Running On        :DESKTOP-2QNIQRH
+# Platform          :Windows Server 2016 or Windows 10
+# Operating System  :22631
+# Processor Detail  :11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz
+# CPU Frequency     :2419 MHz
+# CPU Physical cores:4
+# CPU Logical cores :8
+# Host memory       :8215 MB
+# Swap memory       :6442 MB
+# Total Virtual     :14657 MB
+# Available Virtual :3172 MB
+#-----------------------------------------------------------
+source TopModule.tcl -notrace
