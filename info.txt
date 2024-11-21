@@ -1,0 +1,4 @@
+The work flow of this repository is centered around the ARM.v file, which is the main module that instantiates and connects various other modules.
+The ID_Stage_Reg, EXE_Stage, ID_Reg, ID_Stage, MEM_Stage, WB_Stage, IF_Reg, Adder, Val2_Generate, and ALU modules are all instantiated within the ARM.v file.
+These modules work together to perform various tasks such as instruction decoding, execution, memory access, and register file management. 
+The ARM.v file acts as the top-level module, orchestrating the flow of data and control signals between the various sub-modules.
