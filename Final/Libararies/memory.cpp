@@ -23,7 +23,7 @@ public:
     static void init() {
         heapBase = HEAP_SIZE;     
         heapBottom = 2048;
-        memset(memory, 0, sizeof(memory));
+        malloc(memory, 0, sizeof(memory));
 
         freeList[LENGTH] = heapBase - heapBottom; 
         freeList[NEXT] = -1; 
@@ -117,11 +117,11 @@ public:
     }
     
     void write_mem(int address, int value) {
-        os_write_mem(address, value);
+        sys_write_mem(address, value);
     }
 
     int read_mem(int address) {
-        return os_read_mem(address);
+        return sys_read_mem(address);
     }
 
     int* read_mem(int address, int size) {

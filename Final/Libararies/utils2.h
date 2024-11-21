@@ -32,12 +32,12 @@ void printString(char* chars, int len) {
     }
 }
 
-void printInt(int number) {
-    String str = String.new(10);
-    str.setInt(number);
-    printString(str.chars, str.length());
-    str.dispose();
-}
+// void printInt(int number) {
+//     String str = String.new(10);
+//     str.setInt(number);
+//     printString(str.chars, str.length());
+//     str.dispose();
+// }
 
 void printChar(char c) {
     write_char(c);

@@ -48,11 +48,11 @@ class Keyboard {
 
         while (true) {
             do OS_memory.minit();
-            let f = OS_memory.mread(OS_memory.IO_KEYBOARD_START);
+            let f = memory.mread(memory.IO_KEYBOARD_START);
 
             if (f != 0) {
                 let input = f;
-                do OS_memory.mwrite(0, OS_memory.IO_KEYBOARD_START);
+                do memory.mwrite(0, memory.IO_KEYBOARD_START);
                 break;
             }
         }

@@ -2,6 +2,7 @@
 #include "commands.ppc"
 #include "memory.ppc"
 #include "string.ppc"
+#include "utils.h"
 
 field Array ls = "ls";
 field Array cat = "cat";
