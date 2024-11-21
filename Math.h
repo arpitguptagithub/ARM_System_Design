@@ -1,7 +1,5 @@
-// Tejeswar Math Library
-
 // math.abs(x): Returns the absolute value of a number
-function Int abs(Int x) {
+int abs(int x) {
     IF (x < 0) {
         RETURN -x;
     }
@@ -9,14 +7,14 @@ function Int abs(Int x) {
 }
 
 // math.sqrt(x): Returns the square root of a number using Newton's method
-function Double sqrt(Double x) {
+float sqrt(float x) {
     IF (x < 0) {
         RETURN -1;  // Return error for negative numbers
     }
     
-    Double epsilon = 0.000001;
-    Double guess = x / 2.0;
-    Double result = guess;
+    float epsilon = 0.000001;
+    float guess = x / 2.0;
+    float result = guess;
     
     WHILE (abs(result * result - x) >= epsilon) {
         result = (result + x / result) / 2.0;
@@ -26,9 +24,9 @@ function Double sqrt(Double x) {
 }
 
 // math.pow(x, y): Returns x raised to the power y
-function Double pow(Double x, Int y) {
-    Double result = 1;
-    Int i;
+float pow(float x, int y) {
+    float result = 1;
+    int i;
     
     IF (y == 0) {
         RETURN 1;
@@ -46,17 +44,17 @@ function Double pow(Double x, Int y) {
 }
 
 // math.random(): Generates a random number using Linear Congruential Generator (LCG)
-Int seed = 12345;  // Default seed, can be changed
-Int m = 2147483647;  // Modulus
-Int a = 1664525;  // Multiplier
-Int c = 1013904223;  // Increment
+int seed = 12345;  // Default seed, can be changed
+int m = 2147483647;  // Modulus
+int a = 1664525;  // Multiplier
+int c = 1013904223;  // Increment
 
-function Double random() {
+float random() {
     seed = (a * seed + c) % m;
-    RETURN seed / (Double)m;  // Normalize to range [0, 1)
+    RETURN seed / (float)m;  // Normalize to range [0, 1)
 }
 
 // You can also add a function to set the seed for reproducibility
-function void setSeed(Int newSeed) {
+void setSeed(int newSeed) {
     seed = newSeed;
 }
