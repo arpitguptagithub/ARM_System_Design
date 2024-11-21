@@ -1311,7 +1311,7 @@ class Assembler:
 
 if __name__ == "__main__":
     assembler = Assembler()
-    assembler.assemble("vmout.asm")
+    assembler.assemble("eg.asm")
     # machine_code = assembler.assemble("vmout.asm")
     # print(f"Machine code: {machine_code}")
     
