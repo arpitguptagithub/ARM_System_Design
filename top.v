@@ -20,6 +20,7 @@ wire [31:0] dataToSC;    // Data to be written to Screen Memory (from keyboard)
 wire [31:0] dispData;    // Display data (to be read from memory by DisplayDriver)
 wire [15:0] address;     // Memory address to write/read from
 reg [15:0] addr_reg;     // Address register to keep track of the current address
+reg cursor;              // Cursor signal
 
 // Address increment logic for writing keyboard data to screen memory
 always @(posedge clk) begin
@@ -52,7 +53,8 @@ DisplayDriver displayDriver_inst (
     .TMDSn(TMDSn),
     .TMDSp_clock(TMDSp_clock),
     .TMDSn_clock(TMDSn_clock),
-    .pointer(address)         // Pass the address as the pointer to the display driver
+    .pointer(address),        // Pass the address as the pointer to the display driver
+    .cursor(cursor)           // Pass the cursor signal to the display driver
 );
 
 // Instantiate the keyboard driver module
@@ -62,7 +64,7 @@ keyboardDriver keyboardDriver_inst (
     .sysclk(clk),
     .dispData(dataToSC),     // Data to be written to Screen Memory from keyboard
     .write_enable(write_enable),  // Write enable for screen memory
-    .scan_code_ready(scan_code_ready), 
+    .scan_code_ready(scan_code_ready),
     .ascii_code(ascii_code)       // ASCII code output from keyboard (to be written to Screen Memory)
 );
 

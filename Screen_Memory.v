@@ -1,6 +1,6 @@
 module Screen_Memory(
     input clock,
-    input [15:0] address, 
+    input [15:0] address,
     input [15:0] displayAddr,
     input byteWrite,
     input isWrite,
@@ -10,14 +10,14 @@ module Screen_Memory(
 
     (* ram_style = "block" *)
     reg [31:0] memory [2399:0]; // Adjust memory size as per display requirements
-    
+
     initial begin
         $readmemb("display.mem", memory, 0, 2399); // Load initial screen state
     end
 
     wire [15:0] addr;
     assign addr = address[15:2];  // Simplified to avoid unnecessary OR operation
-    
+
     always @(posedge clock) begin
         if (isWrite && addr < 16'd2400) begin // Ensure writes are within memory bounds
             if (byteWrite == 1'b0) begin

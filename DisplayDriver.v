@@ -1,16 +1,14 @@
 `timescale 1ns / 1ps
 
-
 module DisplayDriver(
     input clk,
     input [31:0] displayData,
-    
     output [2:0] TMDSp,
     output [2:0] TMDSn,
     output TMDSp_clock,
     output TMDSn_clock,
-//    output [31:0] pointer,
-    input wire [31:0] pointer // Change to input wir
+    input wire [31:0] pointer, // Change to input wire
+    input cursor               // Cursor signal
 );
 
 // Clock divider 125 MHz to 25 MHz pixel clock, and multiplier 125 MHz to 250 MHz
@@ -92,7 +90,7 @@ wire [7:0] red, green, blue;
 always @(posedge pixclk) begin
     DrawArea <= (CounterX < 640) && (CounterY < 480); // Define picture dimensions for 640x480
     CounterX <= (CounterX == 799) ? 0 : CounterX + 1; // Horizontal counter
-    if (CounterX == 799) 
+    if (CounterX == 799)
         CounterY <= (CounterY == 524) ? 0 : CounterY + 1; // Vertical counter
 
     hSync <= (CounterX >= 656) && (CounterX < 752); // HSYNC signal
@@ -126,13 +124,13 @@ reg [3:0] TMDS_mod10 = 0; // Modulus 10 counter
 reg [9:0] TMDS_shift_red = 0, TMDS_shift_green = 0, TMDS_shift_blue = 0;
 reg TMDS_shift_load = 0;
 
-always @(posedge clk_TMDS) 
+always @(posedge clk_TMDS)
     TMDS_shift_load <= (TMDS_mod10 == 4'd9); // Shift load high when mod 10 counter is done
 
 always @(posedge clk_TMDS) begin
     TMDS_shift_red <= TMDS_shift_load ? TMDS_red : TMDS_shift_red[9:1];
     TMDS_shift_green <= TMDS_shift_load ? TMDS_green : TMDS_shift_green[9:1];
-    TMDS_shift_blue <= TMDS_shift_load ? TMDS_blue : TMDS_shift_blue[9:1];	
+    TMDS_shift_blue <= TMDS_shift_load ? TMDS_blue : TMDS_shift_blue[9:1];
     TMDS_mod10 <= (TMDS_mod10 == 4'd9) ? 4'd0 : TMDS_mod10 + 4'd1; // Counter increment
 end
 
