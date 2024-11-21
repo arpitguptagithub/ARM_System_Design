@@ -4,8 +4,8 @@ int add(Int a, Int b) {
 
 int main() {
     int result = add(5, 7);
-    print_String("Result: ", 8);
-    print_int(result);
-    print_String("\n", 1);
-    RETURN 0;
+    //print_String("Result: ", 8);
+    //print_int(result);
+    //print_String("\n", 1);
+    RETURN result;
 }
