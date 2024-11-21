@@ -1,0 +1,10 @@
+class terminal {
+    // Initialization of the OS
+    method init() {
+        os.init();
+    }
+}
+
+// Creating an instance of terminal and calling the init method
+field terminal t;
+t.init();
