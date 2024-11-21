@@ -6,6 +6,11 @@ class ST_Entry:
         """
         self.value = value
         self.type = entry_type
+        self.is_global = False
+    
+    def set_global(self):
+        self.is_global = True
 
     def __repr__(self):
-        return f"ST_Entry(type={self.type}, value={self.value})"
+        return f"ST_Entry(type={self.type}, value={self.value}, is_global={self.is_global})"
+    
