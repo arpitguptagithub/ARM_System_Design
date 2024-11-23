@@ -26,6 +26,7 @@ This repository focuses on various aspects of computer system design, including 
 
    - Lightweight OS design tailored for custom processor designs.
    - IO driver module for working
+   - Utilization of simple system calls and libraries as needed.
 
 6. **Processor with Memory Integration**
 
