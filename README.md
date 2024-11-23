@@ -62,3 +62,8 @@ Please refer to the following branches for specific implementations and details:
 - **system_integration**: System integration on the processor.  
 - **testing**: Testing strategies and frameworks.
 
+## Contributions 
+
+Team lead : Arpit Gupta 
+- **System Integration** : Uday(Keyboard Ps2 protocol) , Arpit Gupta (Memory Integration), Siva( Display HDMI protocol) 
+
