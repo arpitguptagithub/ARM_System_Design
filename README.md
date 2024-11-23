@@ -1,7 +1,6 @@
 # ARM_System_Design
 Please make Your own branch of the task and then push in the branch. 
 
-![connection](https://github.com/user-attachments/assets/6be56bcf-9025-44cf-a467-78981fed3ab1)
 #project setup
 
 # Keyboard to Display Connection Module
