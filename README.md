@@ -26,7 +26,7 @@ This repository focuses on various aspects of computer system design, including 
 
 6. **Operating System (OS)**  
    - Lightweight OS design tailored for custom processor designs.  
-   - Integration with ARM and Zybo pipelines.
+   - IO driver module for working
 
 7. **Processor with Memory Integration**  
    - Custom processor design with memory modules.  
@@ -37,9 +37,10 @@ This repository focuses on various aspects of computer system design, including 
 
 9. **Pipeline (PL_COMP_VM_ALL)**  
    - Comprehensive implementation covering all aspects of the pipeline:  
-     - PL (Pipeline)  
+     - PL (Programming Language)  
      - COMP (Compiler)  
      - VM (Virtual Memory and Machine)
+     - ALL ( Assembler, Linker and Loader) 
 
 10. **System Integration**  
     - Techniques for integrating various components of the processor, memory, and peripherals.
@@ -54,20 +55,14 @@ This repository focuses on various aspects of computer system design, including 
 
 Please refer to the following branches for specific implementations and details:
 
-- **main**: Primary branch with stable releases and complete implementations.  
-- **default**: Base branch with initial setup and baseline configurations.  
-- **ALL**: Consolidated resources covering all aspects of system design.  
+- **main**: Primary branch with stable releases and complete implementations.   
+- **ALL**: Consolidated resources covering Assembler, Linker and Loader.  
 - **Compiler**: Compiler-related implementations and optimizations.  
 - **OS**: Lightweight OS design and related projects.  
 - **Processor_W_memory**: Processor design with memory integration.  
-- **Processor_design**: Dedicated processor pipeline designs.  
+- **Processor_design**: Dedicated processor designs with hazard detections.  
 - **Programming_Language**: Contributions and experiments with programming languages.  
 - **pipeline_(PL_COMP_VM_ALL)**: Comprehensive pipeline implementations.  
-- **system_integration**: System integration methods and examples.  
+- **system_integration**: System integration on the processor.  
 - **testing**: Testing strategies and frameworks.
 
----
-
-## Notes
-- Ensure to check the respective branches for detailed implementations and references.
-- Review static linking documentation in context with the ARM A32 and Zybo Z710 pipelines for better understanding.
