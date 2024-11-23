@@ -16,11 +16,7 @@ This repository focuses on various aspects of computer system design, including 
    - Implementation of a multi-stage pipeline (Fetch, Decode, Execute, Memory, Writeback) tailored for ARM A32 and Zybo Z710 architectures.
    - Performance optimizations and considerations for hazards (data, control, and structural).
 
-4. **Static Linking**  
-   - Discussion on static linking in the context of compiler and OS design.
-   - Usage in tightly integrated systems such as those implemented on Zybo boards.
-
-5. **Compiler**  
+4. **Compiler**  
    - Focus on compiling pipelines for embedded systems.  
    - Optimizations specific to ARM and Zybo platforms.
 
