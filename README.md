@@ -41,7 +41,7 @@ This repository focuses on various aspects of computer system design, including 
    - Comprehensive implementation covering all aspects of the pipeline:
      - PL (Programming Language)
      - COMP (Compiler)
-     - VM (Virtual Memory and Machine)
+     - VM (Virtual Machine linker and translator)
      - ALL ( Assembler, Linker and Loader)
 
 9. **System Integration**
