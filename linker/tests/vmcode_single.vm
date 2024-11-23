@@ -1,0 +1,22 @@
+Symboltable:
+  Variable:
+    // name inputsize  defined/declared
+    globalvar1 10      1
+  Function:
+    // name inputsize  defined/declared
+    main      0         1
+    func2     2         0
+    func3     0         0
+VM:
+
+label glob_init
+  push static globalvar1
+    pop temp 0
+    push constant 10
+    wmem temp 0
+  return_init
+label end_init
+
+function main 0
+  push constant 10
+return

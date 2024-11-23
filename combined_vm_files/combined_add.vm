@@ -1,0 +1,38 @@
+Symboltable:
+  Variable:
+  Function:
+    main 0 1
+
+label glob_init
+
+
+  goto return_glob_init_0
+label return_glob_init_0
+ 
+  goto return_glob_init_1
+label return_glob_init_1
+  
+call main 0
+label end
+goto end
+
+
+function main 3
+push constant 10
+pop temp 0
+push temp 0
+pop local 0
+push constant 5
+pop temp 1
+push temp 1
+pop local 1
+push local 0
+push local 1
+addi
+pop temp 2
+push temp 2
+pop local 2
+push constant 0
+pop temp 2
+push temp 2
+return

@@ -1,0 +1,29 @@
+
+// Function to compute factorial
+function factorial 1
+    // Base case: if n <= 1, return 1
+    push argument 0
+    push constant 1
+    lt
+    if-goto base_case
+    
+    // Recursive case: n * factorial(n-1)
+    push argument 0
+    push argument 0
+    push constant 1
+    subi
+    call factorial 1
+    muli
+    return
+
+label base_case
+    push constant 1
+    return
+
+// Main function to compute 10!
+function main 0
+    push constant 10
+    call factorial 1
+    return
+
+    

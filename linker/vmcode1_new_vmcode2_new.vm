@@ -1,0 +1,59 @@
+Symboltable:
+  Variable:
+    globalvar1 10 1
+    globalvar2 20 1
+  Function:
+    main 0 1
+    func2 2 1
+    func3 0 0
+
+label glob_init
+
+push static globalvar1
+    pop temp 0
+    push constant 10
+    wmem temp 0
+  goto return_glob_init_0
+label return_glob_init_0
+  push static globalvar2
+    pop temp 0
+    push constant 10
+    wmem temp 0
+  goto return_glob_init_1
+label return_glob_init_1
+  
+call main 0
+label end
+goto end
+function write_mem 2
+push argument 1
+wmem argument 0
+push constant 0
+ return 
+function read_mem 1
+rmem argument 0
+ return 
+
+
+function main 0
+  push constant 10
+  call func2 1
+return
+function  func2 0
+  push argument 0
+  push constant 1
+  eq
+  if-goto base_case
+  
+  // n * factorial(n-1)
+  push argument 0
+  push argument 0
+  push constant 1
+  subi
+  call func2 1
+  muli
+  return
+
+label base_case
+  push constant 1
+  return

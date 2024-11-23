@@ -1,0 +1,26 @@
+function main 0
+    push constant -6   
+    push constant 7   
+    muli     
+    push constant -2
+    push constant -6
+    muli
+    push constant 3
+    push constant 5
+    muli
+    push constant -2
+    push constant 7
+    addi
+    push constant 7
+    push constant 3
+    divi
+    push constant 10
+    push constant 2
+    divi
+    push constant -21
+    push constant 3
+    divi
+    push constant -10
+    push constant -3
+    divi
+    

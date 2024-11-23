@@ -1,0 +1,21 @@
+// Function to add two numbers
+function add 2
+    // Add the numbers (already on the stack due to function call)
+    push argument 0
+    push argument 1
+    addi
+    
+    // Return the result (already on top of the stack)
+    return
+
+// Main program
+function main 0
+    // Push two numbers onto the stack
+    push constant 5
+    push constant 3
+    
+    // Call the add function
+    call add 2
+    // The result is now on top of the stack
+    // End the program
+    return

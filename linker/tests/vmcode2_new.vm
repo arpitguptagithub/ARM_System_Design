@@ -1,0 +1,33 @@
+Symboltable:
+  Variable:
+    globalvar2 20      1
+  Function:
+    func2     2        1
+VM:
+
+label glob_init
+  push static globalvar2
+    pop temp 0
+    push constant 10
+    wmem temp 0
+  return_init
+label end_init
+
+function  func2 0
+  push argument 0
+  push constant 1
+  eq
+  if-goto base_case
+  
+  // n * factorial(n-1)
+  push argument 0
+  push argument 0
+  push constant 1
+  subi
+  call func2 1
+  muli
+  return
+
+label base_case
+  push constant 1
+  return
