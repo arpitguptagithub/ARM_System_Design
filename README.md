@@ -46,5 +46,5 @@ The VM Linker and Translator is a tool that translates VM code to ARMv7 assembly
 # Usage
 ```
 python linker/VMLinker.py <vmcode1> <vmcode2> ... # save the output to a file in linker folder
-python translator/VMTranslator.py <vmcode> # save the output to a file in src file folder
+python Engine.py <vmcode> # save the output to a file in src file folder
 ```	
