@@ -5,6 +5,8 @@ def process_code(file_path):
     with open(file_path, 'r') as file:
         input_code = file.read()
 
+    input_code = '\n'.join(input_code.split('\n')[1:])
+
     # Step 1: Extract and store all segments between "label glob_init:" and "return_init \n end_init"
     pattern = r"label glob_init(.*?)return_init\s+end_init"
     stored_segments = re.findall(pattern, input_code, re.DOTALL)
