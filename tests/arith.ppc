@@ -1,0 +1,15 @@
+int main(){
+    int x= 10;
+    int y = 10;
+    int z;
+    z = x ? 10 : 20;
+   // z = x + y;
+    // z = x- y;
+   // z = x / y;
+   // z = x * y;
+   // z = x % y;
+    z += x;
+    x = ++z;
+    y = z--;
+    RETURN 0;
+}

@@ -1,0 +1,23 @@
+// code for matrix multiplication
+/*
+checking multi line 
+comments 
+*/
+int main(){
+    int a[2][2] = {{1,2},{1,2}};
+    int b[2][2] = {{2,1},{2,1}};
+    int c[2][2];
+    int i = 0;
+    int j =0;
+    int k = 0;
+    FOR(i =0 ; i < 2; i = i +1){
+      FOR(j =0 ; j < 2; j = j +1){
+        int sum = 0;
+        FOR(k =0 ; k < 2; k = k +1){
+        sum = sum + a[i][k] * b[k][i];
+        }
+        c[i][j] = sum;
+      }   
+    }
+	RETURN  0;
+}

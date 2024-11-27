@@ -1,0 +1,209 @@
+Symboltable:
+Variable:
+
+Function:
+main 0 1
+
+VM:
+label glob_init
+return_init
+label end_init
+function main 16
+push constant 1
+pop local 0
+push constant 2
+pop local 1
+push constant 1
+pop local 2
+push constant 2
+pop local 3
+push constant 2
+pop local 4
+push constant 1
+pop local 5
+push constant 2
+pop local 6
+push constant 1
+pop local 7
+push constant 0
+pop temp 0
+push temp 0
+pop local 12
+push constant 0
+pop temp 1
+push temp 1
+pop local 13
+push constant 0
+pop temp 2
+push temp 2
+pop local 14
+push constant 0
+pop temp 3
+push temp 3
+pop local 12
+label #L1
+push constant 2
+pop temp 4
+push local 12
+push temp 4
+ls
+pop temp 5
+push temp 5
+not
+pop temp 6
+push temp 6
+if-goto #L3
+goto #L2
+label #L4
+push constant 1
+pop temp 6
+push local 12
+push temp 6
+addi
+pop temp 5
+push temp 5
+pop local 12
+goto #L1
+label #L2
+push constant 0
+pop temp 5
+push temp 5
+pop local 13
+label #L6
+push constant 2
+pop temp 7
+push local 13
+push temp 7
+ls
+pop temp 8
+push temp 8
+not
+pop temp 9
+push temp 9
+if-goto #L8
+goto #L7
+label #L9
+push constant 1
+pop temp 9
+push local 13
+push temp 9
+addi
+pop temp 8
+push temp 8
+pop local 13
+goto #L6
+label #L7
+push constant 0
+pop temp 8
+push temp 8
+pop local 15
+push constant 0
+pop temp 10
+push temp 10
+pop local 14
+label #L11
+push constant 2
+pop temp 11
+push local 14
+push temp 11
+ls
+pop temp 12
+push temp 12
+not
+pop temp 13
+push temp 13
+if-goto #L13
+goto #L12
+label #L14
+push constant 1
+pop temp 13
+push local 14
+push temp 13
+addi
+pop temp 12
+push temp 12
+pop local 14
+goto #L11
+label #L12
+push local 14
+pop temp 12
+push local 12
+push constant 2
+muli
+pop temp 14
+push temp 14
+push temp 12
+addi
+pop temp 14
+push static lcl
+push temp 14
+push constant 0
+addi
+push constant 4
+muli
+addi
+pop temp 15
+rmem temp 15
+pop temp 16
+push local 12
+pop temp 17
+push local 14
+push constant 2
+muli
+pop temp 12
+push temp 12
+push temp 17
+addi
+pop temp 12
+push static lcl
+push temp 12
+push constant 4
+addi
+push constant 4
+muli
+addi
+pop temp 18
+rmem temp 18
+pop temp 19
+push temp 16
+push temp 19
+muli
+pop temp 20
+push local 15
+push temp 20
+addi
+pop temp 17
+push temp 17
+pop local 15
+goto #L14
+label #L13
+push local 13
+pop temp 16
+push local 12
+push constant 2
+muli
+pop temp 19
+push temp 19
+push temp 16
+addi
+pop temp 19
+push static lcl
+push temp 19
+push constant 8
+addi
+push constant 4
+muli
+addi
+pop temp 21
+rmem temp 21
+pop temp 20
+push local 15
+pop temp 20
+goto #L9
+label #L8
+goto #L4
+label #L3
+push constant 0
+pop temp 17
+push temp 17
+return

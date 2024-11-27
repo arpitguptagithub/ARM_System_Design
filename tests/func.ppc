@@ -1,0 +1,11 @@
+int factorial(int n){
+    IF(n <= 1){
+        RETURN 1;
+    }
+        RETURN n * factorial(n-1);
+}
+
+int main(){
+    int x = factorial(10);
+    RETURN 0;
+}

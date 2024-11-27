@@ -1,0 +1,29 @@
+Symboltable:
+Variable:
+
+Function:
+main 0 1
+
+VM:
+label glob_init
+return_init
+label end_init
+function main 4
+push constant 10
+pop temp 0
+push temp 0
+pop local 0
+push constant 5
+pop temp 1
+push temp 1
+pop local 1
+push local 0
+push local 1
+addi
+pop temp 2
+push temp 2
+pop local 2
+push constant 0
+pop temp 2
+push temp 2
+return

@@ -1,0 +1,57 @@
+Symboltable:
+Variable:
+
+Function:
+factorial 1 1
+main 0 1
+
+VM:
+label glob_init
+return_init
+label end_init
+function factorial 0
+push constant 1
+pop temp 0
+push argument 0
+push temp 0
+le
+pop temp 1
+push temp 1
+not
+pop temp 2
+push temp 2
+if-goto #L2
+push constant 1
+pop temp 2
+push temp 2
+return
+goto #L1
+label #L2
+label #L1
+push constant 1
+pop temp 1
+push argument 0
+push temp 1
+subi
+pop temp 3
+push temp 3
+call factorial 1
+pop temp 4
+push argument 0
+push temp 4
+muli
+pop temp 5
+push temp 5
+return
+function main 1
+push constant 10
+pop temp 0
+push temp 0
+call factorial 1
+pop temp 1
+push temp 1
+pop local 0
+push constant 0
+pop temp 1
+push temp 1
+return
