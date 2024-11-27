@@ -10,7 +10,7 @@ integer			{digits}|[+-]?({digits}(E|e)[+-]?{digits})
 drown			[-]?({digits}\.{digits})((E|e)[+-]?{digits})?
 char			'[a-zA-Z]?'
 string			(\"([^"\\\n]|(\\['"\?\\abfnrtv]))*\")+
-bool			true|false
+bool			"true"|"false"
 identifier		{Letter}({Letter}|{D})*
 %{
 #include <stdio.h>
@@ -27,7 +27,8 @@ std::map<std::string, std::string> macro_table;
 %}
 
 %%
-
+"//".*              { /* Ignore single-line comments */ }
+"/*"(.|\n)*"*/"		{/*a multi line comment*/}
 
 "auto"			{ strcpy(yylval.node.lexeme, yytext); return(AUTO); }
 "break"			{ strcpy(yylval.node.lexeme, yytext); return(BREAK); }
@@ -164,56 +165,8 @@ std::map<std::string, std::string> macro_table;
 
 
 
-/* comment()
-{
-	char c, c1;
-
-loop:
-	while ((c = input()) != '*' && c != 0)
-		putchar(c);
-
-	if ((c1 = input()) != '/' && c != 0)
-	{
-		unput(c1);
-		goto loop;
-	}
-
-	if (c != 0)
-		putchar(c1);
-} */
 
 
-int column = 0;
-
-void count()
-{
-	int i;
-
-	for (i = 0; yytext[i] != '\0'; i++)
-		if (yytext[i] == '\n')
-			column = 0;
-		else if (yytext[i] == '\t')
-			column += 8 - (column % 8);
-		else
-			column++;
-}
 
 
-int check_type()
-{
-/*
-* pseudo code --- this is what it should check
-*
-*	if (yytext == type_name)
-*		return(TYPE_NAME);
-*
-*	return(IDENTIFIER);
-*/
-
-/*
-*	it actually will only return IDENTIFIER
-*/
-
-	return(IDENTIFIER);
-}
 

@@ -578,6 +578,7 @@ MUL {
 array_declaration
     : array_declaration_without_init
     | array_declaration_with_init {
+        if(curr_function_name=="")
         global_vars[global_vars.size() - 1].is_defined = true;
     }
     ;
@@ -689,7 +690,7 @@ conditional_expression
 
 
         TAC.push_back(a + " = " + c + " " + dtype);
-        TAC.push_back("if " +  t0 + " GOTO " + "#L"+ l0);
+        TAC.push_back("if " +  t0 + " GOTO " + l0);
         TAC.push_back(a + " = " + b + " " +dtype);
         TAC.push_back(l0 + ":");
 
@@ -1203,9 +1204,21 @@ unary_expression
         strcpy($$.type, $1.type);
         strcpy($$.lexeme, $1.lexeme);
     }
-    | INC_OP unary_expression
-    {}
-    | DEC_OP unary_expression
+    | INC_OP unary_expression {
+        strcpy($$.type, $2.type);
+        strcpy($$.lexeme, get_temp().c_str());
+        TAC.push_back(string($2.lexeme) + " = " + string($2.lexeme) + " + 1 " + string($$.type));
+        TAC.push_back(string($$.lexeme) + " = " + string($2.lexeme)+ " "+ string($$.type));
+        const_temps.insert(string($$.lexeme));
+    }
+
+    | DEC_OP unary_expression {
+        strcpy($$.type, $2.type);
+        strcpy($$.lexeme, get_temp().c_str());
+        TAC.push_back(string($2.lexeme) + " = " + string($2.lexeme) + " - 1 " + string($$.type));
+        TAC.push_back(string($$.lexeme) + " = " + string($2.lexeme)+ " "+ string($$.type));
+        const_temps.insert(string($$.lexeme));
+    }
     | unary_operator primary_expression 
     {}
     | '$' primary_expression {
@@ -1251,9 +1264,21 @@ postfix_expression
         TAC.push_back(string($$.lexeme) + " = " + string($1.lexeme) + "[" + string($3.lexeme) + "] " + string($$.type));
     }
     | postfix_expression INC_OP
-    {}
+    {
+        strcpy($$.type, $1.type);
+        strcpy($$.lexeme, get_temp().c_str());
+        TAC.push_back(string($$.lexeme) + " = " + string($1.lexeme)+ " "+ string($$.type));
+        TAC.push_back(string($1.lexeme) + " = " + string($1.lexeme) + " + 1 " + string($$.type));
+        const_temps.insert(string($$.lexeme));
+    }
     | postfix_expression DEC_OP
-    {}
+    {
+        strcpy($$.type, $1.type);
+        strcpy($$.lexeme, get_temp().c_str());
+        TAC.push_back(string($$.lexeme) + " = " + string($1.lexeme)+ " "+ string($$.type));
+        TAC.push_back(string($1.lexeme) + " = " + string($1.lexeme) + " - 1 " + string($$.type));
+        const_temps.insert(string($$.lexeme));
+    }
     | postfix_expression '.' IDENTIFIER
     {}
     |
