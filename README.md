@@ -9,7 +9,7 @@ This branch contains 5 essential components:
 3. **`global_header_addition.y`**: A script file to make suitable changes to TAC TO make it compatible with VM specification.
 4. **`TAC-VM.cpp`**: A C++ program that translates TAC into Virtual Machine (VM) instructions.
 5. **`Makefile`**: A utility file to compile ppc file in a single go to generate VM code.
-The compiler and converter form a pipeline for transforming high-level code into VM-executable instructions. Below is a detailed breakdown of each file and its usage.
+- The compiler and converter form a pipeline for transforming high-level code into VM-executable instructions. Below is a detailed breakdown of each file and its usage.
 
 ---
 
