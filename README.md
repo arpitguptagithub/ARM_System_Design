@@ -156,9 +156,9 @@ make FNAME=<input_parser_filename> INPUTFILE=<input_filename_with_no_file_format
 ---
 
 ## Contributions
-Pardhiv - Built Parser and TAC-VM
-Pranay - Syntax Analysis and Grammar rules
-Karthik Prasad - Lexer
+- Pardhiv - Built Parser and TAC-VM
+- Pranay - Syntax Analysis and Grammar rules
+- Karthik Prasad - Lexer
 
 
 ## Example Workflow
